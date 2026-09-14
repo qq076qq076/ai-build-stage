@@ -1,0 +1,130 @@
+---
+import { CodeXml, Menu, Plus } from '@lucide/astro';
+import StatusLed from '../ui/StatusLed.astro';
+
+const base = import.meta.env.BASE_URL;
+const path = (value: string) => `${base}${value.replace(/^\//, '')}`;
+const repoUrl = 'https://github.com/qq076qq076/ai-build-stage';
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href={path('/')} aria-label="AI Build Stage 首頁">
+      <span class="brand-mark" aria-hidden="true">AI</span>
+      <span>
+        <strong>BUILD STAGE</strong>
+        <small>PUBLIC PROJECT REGISTRY</small>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="主要導覽">
+      <a href={path('/projects/')}>探索作品</a>
+      <a href={path('/guidelines/')}>投稿規範</a>
+      <a href={path('/about/')}>關於平台</a>
+      <a class="repo-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
+        <CodeXml size={18} stroke-width={1.5} />
+        GitHub
+      </a>
+    </nav>
+
+    <details class="mobile-nav">
+      <summary aria-label="開啟導覽選單"><Menu size={22} /><span>選單</span></summary>
+      <nav aria-label="行動版導覽">
+        <StatusLed>System online</StatusLed>
+        <a href={path('/projects/')}>探索作品</a>
+        <a href={path('/guidelines/')}>投稿規範</a>
+        <a href={path('/about/')}>關於平台</a>
+        <a href={`${repoUrl}/issues/new?template=project-submission.yml`} target="_blank" rel="noopener noreferrer">
+          <Plus size={18} />投稿作品
+        </a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 20;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 45%);
+    box-shadow: 0 0.4rem 1.2rem rgb(163 177 198 / 24%);
+  }
+
+  .header-inner,
+  .brand,
+  .desktop-nav,
+  .repo-link {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-inner { justify-content: space-between; gap: 2rem; }
+  .brand { gap: 0.8rem; text-decoration: none; }
+  .brand-mark {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    color: white;
+    background: var(--color-accent);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-accent);
+    font: 800 0.9rem/1 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .brand strong,
+  .brand small { display: block; }
+  .brand strong { font-size: 0.92rem; letter-spacing: 0.08em; line-height: 1.2; }
+  .brand small { margin-top: 0.18rem; color: var(--color-ink-muted); font: 700 0.58rem/1 var(--font-mono); letter-spacing: 0.08em; }
+
+  .desktop-nav { gap: 0.3rem; }
+  .desktop-nav a {
+    min-height: 2.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius-md);
+    color: var(--color-ink-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .desktop-nav a:hover { color: var(--color-accent-dark); background: rgb(209 217 230 / 55%); box-shadow: var(--shadow-recessed); }
+  .repo-link { gap: 0.45rem; }
+
+  .mobile-nav { display: none; position: relative; }
+  .mobile-nav summary {
+    display: flex;
+    min-width: 3rem;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    list-style: none;
+  }
+  .mobile-nav summary::-webkit-details-marker { display: none; }
+  .mobile-nav nav {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    display: grid;
+    width: min(18rem, calc(100vw - 2rem));
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid white;
+    border-radius: var(--radius-lg);
+    background: var(--color-chassis);
+    box-shadow: var(--shadow-floating);
+  }
+  .mobile-nav nav a { display: flex; min-height: 3rem; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-md); font-weight: 700; text-decoration: none; }
+  .mobile-nav nav a:hover { color: var(--color-accent-dark); box-shadow: var(--shadow-recessed); }
+
+  @media (max-width: 48rem) {
+    .desktop-nav { display: none; }
+    .mobile-nav { display: block; }
+  }
+</style>

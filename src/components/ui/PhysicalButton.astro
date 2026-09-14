@@ -1,0 +1,78 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  external?: boolean;
+  ariaLabel?: string;
+}
+
+const { href, variant = 'secondary', external = false, ariaLabel } = Astro.props;
+---
+
+<a
+  class:list={['physical-button', `physical-button--${variant}`]}
+  href={href}
+  aria-label={ariaLabel}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
+  <slot />
+</a>
+
+<style>
+  .physical-button {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.2rem;
+    border: 1px solid rgb(255 255 255 / 40%);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+  }
+
+  .physical-button:hover {
+    filter: brightness(1.035);
+  }
+
+  .physical-button:active {
+    box-shadow: var(--shadow-pressed);
+    transform: translateY(2px);
+  }
+
+  .physical-button--primary {
+    color: var(--color-accent-ink);
+    background: var(--color-accent);
+    box-shadow: var(--shadow-accent);
+  }
+
+  .physical-button--secondary {
+    color: var(--color-ink);
+    background: var(--color-chassis);
+    box-shadow: var(--shadow-card);
+  }
+
+  .physical-button--secondary:hover,
+  .physical-button--ghost:hover {
+    color: var(--color-accent-dark);
+  }
+
+  .physical-button--ghost {
+    color: var(--color-ink-muted);
+    background: transparent;
+    border-color: transparent;
+  }
+
+  @media (max-width: 36rem) {
+    .physical-button {
+      width: 100%;
+    }
+  }
+</style>

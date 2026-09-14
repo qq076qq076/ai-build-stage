@@ -1,0 +1,40 @@
+---
+interface Props {
+  tone?: 'ok' | 'warning' | 'accent';
+  pulse?: boolean;
+}
+
+const { tone = 'ok', pulse = false } = Astro.props;
+---
+
+<span class="status-led-wrap">
+  <span class:list={['status-led', `status-led--${tone}`, { 'status-led--pulse': pulse }]} aria-hidden="true"></span>
+  <span class="technical-label"><slot /></span>
+</span>
+
+<style>
+  .status-led-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .status-led {
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 1px solid rgb(0 0 0 / 28%);
+    border-radius: 50%;
+  }
+
+  .status-led--ok { background: var(--color-ok); box-shadow: 0 0 0.65rem rgb(34 197 94 / 80%); }
+  .status-led--warning { background: var(--color-warning); box-shadow: 0 0 0.65rem rgb(234 179 8 / 70%); }
+  .status-led--accent { background: var(--color-accent); box-shadow: 0 0 0.65rem rgb(255 71 87 / 75%); }
+
+  .status-led--pulse {
+    animation: breathe 2.2s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    50% { opacity: 0.55; }
+  }
+</style>

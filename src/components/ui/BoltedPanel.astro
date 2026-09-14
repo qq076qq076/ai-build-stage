@@ -1,0 +1,54 @@
+---
+interface Props {
+  tag?: 'article' | 'section' | 'div';
+  class?: string;
+  elevated?: boolean;
+}
+
+const { tag: Tag = 'div', class: className, elevated = false } = Astro.props;
+---
+
+<Tag class:list={['bolted-panel', className, { 'bolted-panel--elevated': elevated }] }>
+  <span class="screw screw--tl" aria-hidden="true"></span>
+  <span class="screw screw--tr" aria-hidden="true"></span>
+  <span class="screw screw--bl" aria-hidden="true"></span>
+  <span class="screw screw--br" aria-hidden="true"></span>
+  <slot />
+</Tag>
+
+<style>
+  .bolted-panel {
+    position: relative;
+    border: 1px solid rgb(255 255 255 / 48%);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, rgb(240 242 245 / 55%), rgb(224 229 236 / 88%));
+    box-shadow: var(--shadow-card);
+  }
+
+  .bolted-panel--elevated {
+    box-shadow: var(--shadow-floating);
+  }
+
+  .screw {
+    position: absolute;
+    z-index: 1;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background:
+      linear-gradient(45deg, transparent 44%, rgb(45 52 54 / 42%) 45% 55%, transparent 56%),
+      radial-gradient(circle at 32% 28%, white, var(--color-shadow-deep) 70%);
+    box-shadow: inset 1px 1px 2px rgb(255 255 255 / 80%), 1px 1px 2px rgb(45 52 54 / 25%);
+    pointer-events: none;
+  }
+
+  .screw--tl { top: 0.75rem; left: 0.75rem; }
+  .screw--tr { top: 0.75rem; right: 0.75rem; }
+  .screw--bl { bottom: 0.75rem; left: 0.75rem; }
+  .screw--br { right: 0.75rem; bottom: 0.75rem; }
+
+  @media (max-width: 32rem) {
+    .screw--bl,
+    .screw--br { display: none; }
+  }
+</style>

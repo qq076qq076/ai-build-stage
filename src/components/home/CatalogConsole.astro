@@ -1,0 +1,86 @@
+---
+import { Activity, CircleCheck, RadioTower } from '@lucide/astro';
+import StatusLed from '../ui/StatusLed.astro';
+---
+
+<div class="device" aria-label="Project catalog 狀態面板">
+  <div class="device-topbar">
+    <StatusLed pulse>Registry online</StatusLed>
+    <span class="serial">UNIT ABS-01</span>
+  </div>
+  <div class="screen screen-grid screen-scanlines">
+    <div class="screen-head">
+      <span>CATALOG / VERIFIED ONLY</span>
+      <RadioTower size={18} stroke-width={1.5} />
+    </div>
+    <div class="readout">
+      <strong>0</strong>
+      <span>PROJECTS READY</span>
+    </div>
+    <div class="meter" aria-hidden="true"><span></span></div>
+    <div class="status-row">
+      <span><CircleCheck size={16} /> ISSUE MAPPING</span>
+      <strong>ENFORCED</strong>
+    </div>
+    <div class="status-row">
+      <span><Activity size={16} /> DATA SOURCE</span>
+      <strong>GITHUB</strong>
+    </div>
+  </div>
+  <div class="hardware-row" aria-hidden="true">
+    <span class="dial"></span>
+    <div class="vents"><i></i><i></i><i></i><i></i><i></i></div>
+    <span class="power-key">PWR</span>
+  </div>
+</div>
+
+<style>
+  .device {
+    position: relative;
+    padding: 1.1rem;
+    border: 4px solid #697076;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(145deg, #373e42, #1f2426);
+    box-shadow: 1.2rem 1.2rem 2rem rgb(129 139 153 / 46%), -0.8rem -0.8rem 1.8rem rgb(255 255 255 / 72%);
+    transform: rotate(1.2deg);
+    transition: transform 350ms var(--ease-mechanical);
+  }
+  .device:hover { transform: rotate(0deg) translateY(-3px); }
+  .device::before {
+    position: absolute;
+    inset: 0;
+    border-radius: calc(var(--radius-xl) - 4px);
+    background-image: repeating-linear-gradient(125deg, transparent 0 3px, rgb(255 255 255 / 2%) 3px 5px);
+    content: "";
+    pointer-events: none;
+  }
+  .device-topbar { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 0.35rem 0.85rem; color: #e0e5ec; }
+  .serial { color: #8d989f; font: 700 0.62rem/1 var(--font-mono); letter-spacing: 0.08em; }
+  .screen {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(1.2rem, 4vw, 2rem);
+    border: 2px solid #0f1213;
+    border-radius: var(--radius-lg);
+    color: #e4ece8;
+    background-color: #111817;
+    box-shadow: inset 0.5rem 0.5rem 1rem #050707, inset -0.25rem -0.25rem 0.75rem #26302e;
+  }
+  .screen-head,
+  .status-row { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font: 600 0.68rem/1.4 var(--font-mono); letter-spacing: 0.06em; }
+  .screen-head { color: #8ca199; }
+  .readout { position: relative; z-index: 1; display: flex; align-items: baseline; gap: 0.8rem; margin: 2rem 0 1rem; }
+  .readout strong { color: var(--color-accent); font: 500 clamp(3.5rem, 9vw, 6rem)/0.8 var(--font-mono); text-shadow: 0 0 1.5rem rgb(255 71 87 / 40%); }
+  .readout span { max-width: 8rem; color: #a9b8b2; font: 600 0.72rem/1.3 var(--font-mono); }
+  .meter { position: relative; z-index: 1; height: 0.65rem; margin-bottom: 1.5rem; overflow: hidden; border-radius: 999px; background: #080c0b; box-shadow: inset 0 2px 4px #000; }
+  .meter span { display: block; width: 12%; height: 100%; background: repeating-linear-gradient(90deg, var(--color-accent) 0 5px, transparent 5px 8px); box-shadow: 0 0 1rem rgb(255 71 87 / 70%); }
+  .status-row { min-height: 2.4rem; border-top: 1px solid rgb(168 178 189 / 13%); color: #92a19b; }
+  .status-row span { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .status-row strong { color: #d7e5df; font-weight: 500; }
+  .hardware-row { position: relative; display: flex; min-height: 3.4rem; align-items: end; justify-content: space-between; padding: 1rem 0.35rem 0; }
+  .dial { width: 2.4rem; height: 2.4rem; border: 1px solid #0c0e0f; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #646d72, #171b1d 68%); box-shadow: 3px 3px 6px #101314, -2px -2px 4px #50585c; }
+  .vents { display: flex; gap: 0.35rem; }
+  .vents i { width: 0.25rem; height: 1.75rem; border-radius: 999px; background: #111516; box-shadow: inset 1px 1px 2px #000, 1px 1px 0 rgb(255 255 255 / 8%); }
+  .power-key { display: grid; width: 2.9rem; height: 2.2rem; place-items: center; border-radius: var(--radius-sm); color: white; background: var(--color-accent); box-shadow: 3px 3px 6px #111, -1px -1px 2px rgb(255 255 255 / 20%); font: 700 0.56rem/1 var(--font-mono); }
+  @media (max-width: 48rem) { .device { transform: none; } }
+</style>

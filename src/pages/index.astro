@@ -1,0 +1,99 @@
+---
+import { ArrowRight, CodeXml, ShieldCheck, Sparkles } from '@lucide/astro';
+import CatalogConsole from '../components/home/CatalogConsole.astro';
+import BoltedPanel from '../components/ui/BoltedPanel.astro';
+import PhysicalButton from '../components/ui/PhysicalButton.astro';
+import StatusLed from '../components/ui/StatusLed.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+const path = (value: string) => `${base}${value.replace(/^\//, '')}`;
+const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?template=project-submission.yml';
+---
+
+<BaseLayout canonicalPath={base}>
+  <section class="hero shell">
+    <div class="hero-copy">
+      <StatusLed pulse>System operational</StatusLed>
+      <p class="eyebrow technical-label">Verified AI project registry</p>
+      <h1 class="embossed-text">AI 做出的作品，<br /><span>值得被看見。</span></h1>
+      <p class="intro">探索真實上線的 AI 專案。每件作品都連回一張經過人工審核的 GitHub Issue，推薦與評論公開可查。</p>
+      <div class="hero-actions">
+        <PhysicalButton href={path('/projects/')} variant="primary">
+          探索作品 <ArrowRight size={18} stroke-width={2} />
+        </PhysicalButton>
+        <PhysicalButton href={submitUrl} external>
+          <CodeXml size={18} stroke-width={1.7} /> 投稿作品
+        </PhysicalButton>
+      </div>
+      <p class="microcopy">不需註冊新帳號。投稿、推薦與評論都使用 GitHub。</p>
+    </div>
+    <CatalogConsole />
+  </section>
+
+  <section class="principles shell" aria-labelledby="principles-title">
+    <header>
+      <p class="technical-label">Operating principles</p>
+      <h2 id="principles-title">一套透明、可追溯的展示流程</h2>
+    </header>
+    <div class="principle-grid">
+      <BoltedPanel tag="article">
+        <span class="icon-housing"><Sparkles size={26} stroke-width={1.5} /></span>
+        <p class="technical-label">01 / Submit</p>
+        <h3>用 Issue 投稿</h3>
+        <p>依照精簡表單提供作品名稱、介紹、連結與使用的 AI 工具。</p>
+      </BoltedPanel>
+      <BoltedPanel tag="article">
+        <span class="icon-housing"><ShieldCheck size={26} stroke-width={1.5} /></span>
+        <p class="technical-label">02 / Verify</p>
+        <h3>人工審核上架</h3>
+        <p>只有同時取得 approved 與 verified 標記的作品會出現在網站。</p>
+      </BoltedPanel>
+      <BoltedPanel tag="article">
+        <span class="icon-housing"><CodeXml size={26} stroke-width={1.5} /></span>
+        <p class="technical-label">03 / Respond</p>
+        <h3>互動回到 GitHub</h3>
+        <p>推薦與留言保留在原始 Issue，不建立另一套不透明的社群資料庫。</p>
+      </BoltedPanel>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
+    gap: clamp(3rem, 8vw, 7rem);
+    align-items: center;
+    min-height: calc(100vh - 5rem);
+    padding-block: clamp(4rem, 10vw, 8rem);
+  }
+  .hero-copy { max-width: 40rem; }
+  .eyebrow { margin: 2rem 0 1rem; color: var(--color-accent-dark); }
+  h1 { margin: 0; font-size: clamp(3.2rem, 7vw, 5.8rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.98; }
+  h1 span { color: var(--color-accent-dark); }
+  .intro { max-width: 59ch; margin: 1.8rem 0 0; color: var(--color-ink-muted); font-size: clamp(1.05rem, 2vw, 1.2rem); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.2rem; }
+  .microcopy { margin: 1.2rem 0 0; color: var(--color-ink-muted); font: 500 0.75rem/1.5 var(--font-mono); }
+  .principles { padding-block: 3rem 2rem; }
+  .principles > header { max-width: 45rem; margin-bottom: 2.5rem; }
+  .principles header p { color: var(--color-accent-dark); }
+  h2 { margin: 0.5rem 0 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; letter-spacing: -0.035em; }
+  .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .principle-grid article { min-height: 19rem; padding: 2.4rem 2rem 2rem; transition: transform 300ms var(--ease-mechanical), box-shadow 300ms ease; }
+  .principle-grid article:hover { box-shadow: var(--shadow-floating); transform: translateY(-4px); }
+  .principle-grid .technical-label { margin: 1.5rem 0 0.6rem; color: var(--color-accent-dark); }
+  .principle-grid h3 { margin: 0; font-size: 1.35rem; }
+  .principle-grid article > p:last-child { margin: 0.8rem 0 0; color: var(--color-ink-muted); }
+  .icon-housing { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 50%; color: var(--color-accent-dark); background: var(--color-chassis); box-shadow: var(--shadow-floating); }
+  @media (max-width: 56rem) {
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-copy { max-width: 44rem; }
+    .principle-grid { grid-template-columns: 1fr; }
+    .principle-grid article { min-height: 0; }
+  }
+  @media (max-width: 36rem) {
+    .hero { padding-block: 3.5rem; }
+    .hero-actions { display: grid; }
+  }
+</style>
