@@ -1,0 +1,21 @@
+---
+import { ArrowLeft } from '@lucide/astro';
+import PhysicalButton from '../components/ui/PhysicalButton.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="找不到頁面｜AI Build Stage" description="你開啟的頁面不存在或作品已下架。" canonicalPath={`${base}404/`}>
+  <section class="not-found shell">
+    <p class="code">ERR / 404</p><h1>這個訊號不存在</h1><p>頁面可能已移動，或作品已經下架。公開 catalog 只保留目前通過審核的 Project。</p>
+    <PhysicalButton href={`${base}projects/`} variant="primary"><ArrowLeft size={18} />返回作品列表</PhysicalButton>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found { display: grid; min-height: 65vh; place-items: center; align-content: center; padding-block: 4rem; text-align: center; }
+  .code { margin: 0; color: var(--color-accent); font: 500 clamp(4rem, 15vw, 9rem)/0.8 var(--font-mono); letter-spacing: -0.08em; text-shadow: 0.5rem 0.5rem 1rem var(--color-shadow), -0.3rem -0.3rem 0.8rem white; }
+  h1 { margin: 2rem 0 0; font-size: clamp(2rem, 6vw, 4rem); letter-spacing: -0.05em; }
+  .not-found > p:not(.code) { max-width: 38rem; margin: 1rem 0 2rem; color: var(--color-ink-muted); }
+</style>

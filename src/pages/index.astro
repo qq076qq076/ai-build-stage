@@ -1,14 +1,19 @@
 ---
 import { ArrowRight, CodeXml, ShieldCheck, Sparkles } from '@lucide/astro';
 import CatalogConsole from '../components/home/CatalogConsole.astro';
+import ProjectCard from '../components/catalog/ProjectCard.astro';
 import BoltedPanel from '../components/ui/BoltedPanel.astro';
 import PhysicalButton from '../components/ui/PhysicalButton.astro';
 import StatusLed from '../components/ui/StatusLed.astro';
+import { loadCatalog } from '../lib/catalog';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
 const path = (value: string) => `${base}${value.replace(/^\//, '')}`;
 const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?template=project-submission.yml';
+const catalog = loadCatalog();
+const featured = catalog.projects.filter((project) => project.featured).slice(0, 3);
+const latest = featured.length ? featured : [...catalog.projects].sort((a, b) => Date.parse(b.approvedAt) - Date.parse(a.approvedAt)).slice(0, 3);
 ---
 
 <BaseLayout canonicalPath={base}>
@@ -28,7 +33,19 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
       </div>
       <p class="microcopy">不需註冊新帳號。投稿、推薦與評論都使用 GitHub。</p>
     </div>
-    <CatalogConsole />
+    <CatalogConsole count={catalog.projects.length} generatedAt={catalog.generatedAt} />
+  </section>
+
+  <section class="latest shell" aria-labelledby="latest-title">
+    <header class="section-heading">
+      <div><p class="technical-label">Current inventory</p><h2 id="latest-title">{featured.length ? '精選作品' : '最新上架'}</h2></div>
+      <a href={path('/projects/')}>查看全部 <ArrowRight size={17} /></a>
+    </header>
+    {latest.length > 0 ? (
+      <div class="latest-grid">{latest.map((project) => <ProjectCard project={project} />)}</div>
+    ) : (
+      <div class="catalog-empty"><p class="technical-label">STAGE READY / 000</p><h3>等待第一件通過審核的作品</h3><p>公開 catalog 目前是空的。投稿完成並取得 verified 標記後，作品會自動出現在這裡。</p><PhysicalButton href={submitUrl} external>投稿作品</PhysicalButton></div>
+    )}
   </section>
 
   <section class="principles shell" aria-labelledby="principles-title">
@@ -76,6 +93,16 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
   .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.2rem; }
   .microcopy { margin: 1.2rem 0 0; color: var(--color-ink-muted); font: 500 0.75rem/1.5 var(--font-mono); }
   .principles { padding-block: 3rem 2rem; }
+  .latest { padding-block: 2rem 5rem; }
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2.5rem; }
+  .section-heading p { margin: 0; color: var(--color-accent-dark); }
+  .section-heading a { display: inline-flex; min-height: 3rem; align-items: center; gap: 0.4rem; color: var(--color-ink-muted); font-size: 0.85rem; font-weight: 800; text-decoration: none; }
+  .section-heading a:hover { color: var(--color-accent-dark); }
+  .latest-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+  .catalog-empty { padding: clamp(2.5rem, 7vw, 4.5rem); border-radius: var(--radius-xl); text-align: center; box-shadow: var(--shadow-recessed); }
+  .catalog-empty .technical-label { margin: 0; color: var(--color-accent-dark); }
+  .catalog-empty h3 { margin: 0.8rem 0 0; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+  .catalog-empty > p:not(.technical-label) { max-width: 42rem; margin: 0.8rem auto 1.6rem; color: var(--color-ink-muted); }
   .principles > header { max-width: 45rem; margin-bottom: 2.5rem; }
   .principles header p { color: var(--color-accent-dark); }
   h2 { margin: 0.5rem 0 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; letter-spacing: -0.035em; }
@@ -90,10 +117,12 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
     .hero { grid-template-columns: 1fr; min-height: auto; }
     .hero-copy { max-width: 44rem; }
     .principle-grid { grid-template-columns: 1fr; }
+    .latest-grid { grid-template-columns: 1fr; }
     .principle-grid article { min-height: 0; }
   }
   @media (max-width: 36rem) {
     .hero { padding-block: 3.5rem; }
     .hero-actions { display: grid; }
+    .section-heading { align-items: start; flex-direction: column; }
   }
 </style>

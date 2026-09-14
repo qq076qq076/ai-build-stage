@@ -1,0 +1,33 @@
+---
+import { DatabaseZap, Eye, ServerOff } from '@lucide/astro';
+import BoltedPanel from '../components/ui/BoltedPanel.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="關於平台｜AI Build Stage" description="AI Build Stage 是以 GitHub Issues、Actions 與 Pages 運作的零後端 AI 作品展示平台。" canonicalPath={`${base}about/`}>
+  <article class="about shell">
+    <header><p class="technical-label">About the system</p><h1>一座由 GitHub 驅動的公開舞台</h1><p>AI Build Stage 不建立另一套帳號、資料庫或互動黑盒。作品從投稿到推薦，都能回到 GitHub 查證。</p></header>
+    <div class="system-grid">
+      <BoltedPanel tag="section"><Eye size={28} /><p class="technical-label">Public by design</p><h2>公開透明</h2><p>每個 Project 都對應一張 Issue；上架條件、修改紀錄、推薦與評論皆公開。</p></BoltedPanel>
+      <BoltedPanel tag="section"><ServerOff size={28} /><p class="technical-label">Zero backend</p><h2>沒有自建後端</h2><p>網站由 Astro 產生靜態檔案並部署至 GitHub Pages，不維護伺服器、帳號或資料庫。</p></BoltedPanel>
+      <BoltedPanel tag="section"><DatabaseZap size={28} /><p class="technical-label">Build time data</p><h2>資料經過驗證</h2><p>GitHub Actions 只把 approved + verified Issues 轉換成公開 catalog，失敗時保留上一版。</p></BoltedPanel>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .about { padding-block: clamp(4rem, 10vw, 8rem); }
+  header { max-width: 55rem; }
+  header .technical-label, .system-grid .technical-label { color: var(--color-accent-dark); }
+  h1 { margin: 0.6rem 0 0; font-size: clamp(3.2rem, 8vw, 6rem); line-height: 0.98; letter-spacing: -0.06em; }
+  header > p:last-child { max-width: 62ch; color: var(--color-ink-muted); font-size: 1.12rem; }
+  .system-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4.5rem; }
+  .system-grid section { min-height: 19rem; padding: 2.5rem 2rem; }
+  .system-grid :global(svg) { color: var(--color-accent-dark); }
+  .system-grid .technical-label { margin: 1.5rem 0 0; }
+  h2 { margin: 0.6rem 0 0; font-size: 1.45rem; }
+  .system-grid section > p:last-child { color: var(--color-ink-muted); }
+  @media (max-width: 48rem) { .system-grid { grid-template-columns: 1fr; } .system-grid section { min-height: 0; } }
+</style>

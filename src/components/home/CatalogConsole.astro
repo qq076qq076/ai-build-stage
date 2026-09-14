@@ -1,6 +1,14 @@
 ---
 import { Activity, CircleCheck, RadioTower } from '@lucide/astro';
 import StatusLed from '../ui/StatusLed.astro';
+
+interface Props {
+  count: number;
+  generatedAt: string;
+}
+
+const { count, generatedAt } = Astro.props;
+const syncLabel = new Date(generatedAt).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' });
 ---
 
 <div class="device" aria-label="Project catalog 狀態面板">
@@ -14,7 +22,7 @@ import StatusLed from '../ui/StatusLed.astro';
       <RadioTower size={18} stroke-width={1.5} />
     </div>
     <div class="readout">
-      <strong>0</strong>
+      <strong>{count}</strong>
       <span>PROJECTS READY</span>
     </div>
     <div class="meter" aria-hidden="true"><span></span></div>
@@ -25,6 +33,10 @@ import StatusLed from '../ui/StatusLed.astro';
     <div class="status-row">
       <span><Activity size={16} /> DATA SOURCE</span>
       <strong>GITHUB</strong>
+    </div>
+    <div class="status-row">
+      <span>LAST SYNC</span>
+      <strong>{syncLabel}</strong>
     </div>
   </div>
   <div class="hardware-row" aria-hidden="true">

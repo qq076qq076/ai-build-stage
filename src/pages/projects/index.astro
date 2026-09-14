@@ -1,0 +1,29 @@
+---
+import ProjectExplorer from '../../components/catalog/ProjectExplorer.astro';
+import { loadCatalog } from '../../lib/catalog';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const catalog = loadCatalog();
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="探索 AI 作品｜AI Build Stage" description="搜尋與篩選經過人工審核、可追溯至 GitHub Issue 的 AI 製作專案。" canonicalPath={`${base}projects/`}>
+  <section class="catalog-shell shell">
+    <header class="page-header">
+      <p class="technical-label">Public project registry</p>
+      <h1 class="embossed-text">探索 AI 作品</h1>
+      <p>每件上架作品都對應一張通過審核的 GitHub Issue。你可以自由瀏覽；推薦或留言時再前往 GitHub。</p>
+      <span class="sync-time">CATALOG SYNC / <time datetime={catalog.generatedAt}>{new Date(catalog.generatedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}</time></span>
+    </header>
+    <ProjectExplorer projects={catalog.projects} />
+  </section>
+</BaseLayout>
+
+<style>
+  .catalog-shell { padding-block: clamp(3.5rem, 8vw, 6rem); }
+  .page-header { max-width: 52rem; margin-bottom: 3rem; }
+  .page-header > .technical-label { color: var(--color-accent-dark); }
+  h1 { margin: 0.6rem 0 0; font-size: clamp(3rem, 7vw, 5.3rem); line-height: 1; letter-spacing: -0.055em; }
+  .page-header > p:not(.technical-label) { max-width: 62ch; margin: 1.2rem 0 0; color: var(--color-ink-muted); font-size: 1.08rem; }
+  .sync-time { display: inline-block; margin-top: 1.2rem; color: var(--color-ink-muted); font: 600 0.7rem/1.4 var(--font-mono); letter-spacing: 0.06em; }
+</style>
