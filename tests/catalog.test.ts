@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { projectCatalogSchema, projectSchema, type Project } from '../src/lib/catalog';
 import { matchesProject, normalizeSearchText, sortProjects } from '../src/lib/search';
+import { parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
 
 const project: Project = {
   id: 'gh:example/stage#12',
@@ -47,5 +48,38 @@ describe('search and sort', () => {
   it('依推薦數排序並保持 deterministic fallback', () => {
     const another: Project = { ...project, id: 'gh:example/stage#13', slug: 'second', issue: { ...project.issue, number: 13, reactions: { plusOne: 20 } } };
     expect(sortProjects([project, another], 'recommended')[0]?.id).toBe(another.id);
+  });
+});
+
+describe('Issue Form parser', () => {
+  it('解析五個必要欄位並套用預設值', () => {
+    const fields = parseIssueBody(`### 專案名稱
+Mechanical Notes
+
+### 一句話介紹
+_No response_
+
+### 作品介紹
+這是一段超過五十個字的完整作品介紹，用來說明專案如何協助使用者整理研究資料，並且確保投稿格式能夠通過自動驗證程序。
+
+### 作品網址
+https://example.com
+
+### 使用的 AI 工具
+Codex, ChatGPT
+
+### 投稿確認
+- [x] 我同意投稿規範
+`);
+    expect(fields.name).toBe('Mechanical Notes');
+    expect(fields.aiTools).toEqual(['Codex', 'ChatGPT']);
+    expect(fields.category).toBe('other');
+    expect(fields.pricing).toBe('unspecified');
+    expect(fields.tags).toEqual([]);
+    expect(fields.tagline?.length).toBeGreaterThan(0);
+  });
+
+  it('中文名稱使用 Issue number 作為穩定 slug fallback', () => {
+    expect(slugify('純中文作品', 42)).toBe('project-42');
   });
 });

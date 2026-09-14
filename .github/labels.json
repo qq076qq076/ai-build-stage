@@ -1,0 +1,10 @@
+[
+  { "name": "submission", "color": "1d76db", "description": "AI Build Stage 作品投稿" },
+  { "name": "status:pending", "color": "eab308", "description": "等待審核" },
+  { "name": "status:changes-requested", "color": "fbca04", "description": "等待投稿者補件" },
+  { "name": "status:approved", "color": "0e8a16", "description": "內容審核通過" },
+  { "name": "status:rejected", "color": "d73a4a", "description": "不符合投稿規範" },
+  { "name": "status:withdrawn", "color": "6a737d", "description": "投稿已撤回或下架" },
+  { "name": "verified", "color": "22c55e", "description": "具備公開上架資格" },
+  { "name": "featured", "color": "ff4757", "description": "首頁精選作品" }
+]

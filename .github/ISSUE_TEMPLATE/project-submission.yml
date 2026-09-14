@@ -1,0 +1,131 @@
+name: 投稿 AI 作品
+description: 提交一件使用 AI 製作、可公開檢視的作品
+title: "[Project]: "
+labels:
+  - submission
+  - status:pending
+body:
+  - type: markdown
+    attributes:
+      value: |
+        <!-- schema-version: 1 -->
+        感謝投稿！只有下方標示「必填」的五個項目一定要填，其他資料可留白。
+
+  - type: input
+    id: project_name
+    attributes:
+      label: 專案名稱
+      description: 公開顯示的作品名稱，2–80 字。
+      placeholder: 例如：Prompt Pantry
+    validations:
+      required: true
+
+  - type: input
+    id: tagline
+    attributes:
+      label: 一句話介紹
+      description: 選填；留白時會從作品介紹自動產生。
+      placeholder: 用一句話說明這件作品解決什麼問題
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 作品介紹
+      description: 請用 50–2,000 字說明用途、主要功能與適合的使用者。
+      placeholder: 這件作品可以……
+    validations:
+      required: true
+
+  - type: input
+    id: demo_url
+    attributes:
+      label: 作品網址
+      description: 必須是任何人都能開啟的 HTTPS 網址。
+      placeholder: https://example.com
+    validations:
+      required: true
+
+  - type: input
+    id: source_url
+    attributes:
+      label: 原始碼網址
+      description: 選填；如果作品有公開 repository，可貼在這裡。
+      placeholder: https://github.com/owner/repository
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 分類
+      description: 選填；未選擇時歸入「其他」。
+      options:
+        - 其他
+        - 網站
+        - 行動應用
+        - 遊戲
+        - 開發工具
+        - 創意內容
+        - 生產力
+        - 教育
+
+  - type: input
+    id: tags
+    attributes:
+      label: 標籤
+      description: 選填；以逗號分隔，最多五個。
+      placeholder: 筆記, 研究, 自動化
+
+  - type: input
+    id: ai_tools
+    attributes:
+      label: 使用的 AI 工具
+      description: 至少一項，以逗號分隔。
+      placeholder: Codex, ChatGPT
+    validations:
+      required: true
+
+  - type: textarea
+    id: build_story
+    attributes:
+      label: AI 如何參與
+      description: 選填；可分享工作流程、提示方法或學到的事。
+
+  - type: input
+    id: creator_name
+    attributes:
+      label: 創作者名稱
+      description: 選填；留白時使用你的 GitHub 帳號名稱。
+
+  - type: input
+    id: creator_url
+    attributes:
+      label: 創作者網址
+      description: 選填；留白時使用你的 GitHub profile。
+      placeholder: https://github.com/username
+
+  - type: dropdown
+    id: pricing
+    attributes:
+      label: 價格
+      description: 選填；未選擇時顯示「未指定」。
+      options:
+        - 未指定
+        - 免費
+        - 部分免費
+        - 付費
+        - 開源
+        - 其他
+
+  - type: input
+    id: languages
+    attributes:
+      label: 語言
+      description: 選填；以逗號分隔。
+      placeholder: zh-TW, en
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: 投稿確認
+      options:
+        - label: 我有權提交這些內容，理解 Issue 與互動皆為公開資料，並同意投稿規範。
+          required: true

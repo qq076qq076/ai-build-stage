@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全問題回報
+    url: https://github.com/qq076qq076/ai-build-stage/security
+    about: 請勿透過公開投稿 Issue 揭露安全漏洞或秘密資料。
+  - name: 一般問題與建議
+    url: https://github.com/qq076qq076/ai-build-stage/discussions
+    about: 非作品投稿的問題請使用 Discussions。

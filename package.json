@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "catalog:build": "node scripts/build-catalog.mjs",
+    "catalog:validate": "node scripts/build-catalog.mjs --validate-issue"
   },
   "dependencies": {
     "@lucide/astro": "^1.45.0",
@@ -20,6 +22,6 @@
     "@tailwindcss/vite": "^4.1.13",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^5.0.0"
   }
 }
