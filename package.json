@@ -10,7 +10,8 @@
     "check": "astro check",
     "test": "vitest run",
     "catalog:build": "node scripts/build-catalog.mjs",
-    "catalog:validate": "node scripts/build-catalog.mjs --validate-issue"
+    "catalog:validate": "node scripts/build-catalog.mjs --validate-issue",
+    "verify:build": "node scripts/verify-build.mjs"
   },
   "dependencies": {
     "@lucide/astro": "^1.45.0",

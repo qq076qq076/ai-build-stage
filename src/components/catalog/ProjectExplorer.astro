@@ -22,7 +22,7 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
     </form>
   )}
 
-  <div class="result-bar"><p><strong data-result-count>{projects.length}</strong> 件已驗證作品</p><p class="technical-label">GitHub issue backed</p></div>
+  <div class="result-bar"><p aria-live="polite"><strong data-result-count>{projects.length}</strong> 件已驗證作品</p><p class="technical-label">GitHub issue backed</p></div>
   <div class="project-grid" data-project-grid>{projects.map((project) => <ProjectCard project={project} />)}</div>
 
   <div class="empty-panel" data-empty={projects.length === 0 ? 'catalog' : 'filters'} hidden={projects.length > 0}>

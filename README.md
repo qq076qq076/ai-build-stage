@@ -17,6 +17,7 @@ npm run dev
 npm run check
 npm test
 npm run build
+npm run verify:build
 ```
 
 公開 catalog 位於 `public/data/projects.json`。本機可使用既有 snapshot；GitHub Actions 部署時會執行 `npm run catalog:build`，只納入同時具有 `submission`、`status:approved`、`verified` 的 Issues。

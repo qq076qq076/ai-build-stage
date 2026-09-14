@@ -44,6 +44,8 @@ jobs:
         run: npm test
       - name: 建置靜態網站
         run: npm run build
+      - name: 驗證 Pages 產物
+        run: npm run verify:build
       - name: 設定 GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: 上傳 Pages artifact
@@ -61,4 +63,3 @@ jobs:
       - name: 部署 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
-
