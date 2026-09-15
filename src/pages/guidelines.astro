@@ -10,12 +10,12 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
 
 <BaseLayout title="投稿規範｜AI Build Stage" description="了解 AI Build Stage 的投稿資格、審核標準與公開資料規則。" canonicalPath={`${base}guidelines/`}>
   <article class="document shell">
-    <header><p class="technical-label">Submission protocol</p><h1>投稿規範</h1><p>表單刻意保持精簡。請提供可公開檢視的作品，以及足以讓審核者理解 AI 如何參與的資訊。</p></header>
+    <header><p class="technical-label">Submission protocol</p><h1>投稿規範</h1><p>表單刻意保持精簡。請提供可公開檢視的作品、清楚的用途介紹，以及使用的 AI 工具。</p></header>
     <div class="document-grid">
       <BoltedPanel tag="section"><Check size={28} aria-hidden="true" /><h2>可以投稿</h2><ul><li>已能公開使用或檢視的作品</li><li>確實使用至少一項 AI 工具製作</li><li>你有權分享的文字與連結</li><li>願意接受公開評論與推薦</li></ul></BoltedPanel>
       <BoltedPanel tag="section"><ShieldAlert size={28} aria-hidden="true" /><h2>不接受</h2><ul><li>惡意程式、詐騙或危險連結</li><li>侵權、冒用或未經授權的內容</li><li>仇恨、騷擾或違法內容</li><li>只有構想、沒有可檢視成果的投稿</li></ul></BoltedPanel>
     </div>
-    <section class="steps"><p class="technical-label">Review sequence</p><h2>上架流程</h2><ol><li><strong>提交 Issue</strong><span>填寫五個必要項目，其他資料可選填。</span></li><li><strong>人工審核</strong><span>維護者檢查連結、內容與是否重複。</span></li><li><strong>公開上架</strong><span>取得 approved 與 verified 後自動出現在網站。</span></li></ol></section>
+    <section class="steps"><p class="technical-label">Review sequence</p><h2>上架流程</h2><ol><li><strong>提交 Issue</strong><span>在標題填寫專案名稱，再完成四個必要項目。</span></li><li><strong>人工審核</strong><span>維護者檢查連結、內容與是否重複。</span></li><li><strong>公開上架</strong><span>取得 approved 與 verified 後自動出現在網站。</span></li></ol></section>
     <section class="cta"><div><p class="technical-label">Ready to submit</p><h2>把作品送上舞台</h2><p>GitHub 會保存你的投稿內容與後續互動。</p></div><PhysicalButton href={submitUrl} variant="primary" external>開啟投稿表單 <ExternalLink size={18} /></PhysicalButton></section>
   </article>
 </BaseLayout>

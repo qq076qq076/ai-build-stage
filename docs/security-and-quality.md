@@ -78,7 +78,8 @@
 ### 23.1 投稿與審核
 
 - [ ] GitHub new issue 頁只提供 Project Issue Form 與明確的其他聯絡入口，不開放無模板投稿。
-- [ ] 表單只有 `project_name`、`description`、`demo_url`、`ai_tools`、`agreements` 為必填；未填選填欄位會套用明確預設值。
+- [ ] Project 名稱取自 Issue title；表單只有 `description`、`demo_url`、`ai_tools`、`agreements` 為必填。
+- [ ] 表單與 catalog schema 均不包含 `project_name`、`tagline`、`build_story`、`pricing` 或 `languages`。
 - [ ] 表單與 catalog schema 均不包含 `cover_image_url` 或 `gallery_urls`。
 - [ ] 新投稿自動得到 `submission`、`status:pending`。
 - [ ] 只有同時具有 `submission`、`status:approved`、`verified` 且狀態唯一的 Issue 會進入 catalog。
@@ -122,4 +123,3 @@
 - [ ] 320–1440px 版面保留工業擬物語言，且無 shadow clipping、水平捲動或小於 48px 的 mobile touch target。
 - [ ] `prefers-reduced-motion` 與 `forced-colors` 模式完整可用；功能與狀態不只依賴陰影、動畫或顏色。
 - [ ] 使用 `@lucide/astro` 且不引入 React/Vue 等 UI framework runtime，production 不產生第三方 font/texture request。
-

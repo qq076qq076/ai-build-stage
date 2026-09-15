@@ -114,7 +114,7 @@ GitHub Action ──GitHub API──► validate/normalize/generate projects.jso
 
 ```ts
 export interface ProjectCatalog {
-  schemaVersion: 1;
+  schemaVersion: 2;
   generatedAt: string; // ISO 8601 UTC
   repository: string;  // owner/repo
   projects: Project[];
@@ -124,21 +124,17 @@ export interface Project {
   id: `gh:${string}/${string}#${number}`;
   slug: string;
   title: string;
-  tagline: string;
   description: string;
   demoUrl: string;
   sourceUrl?: string;
   category: ProjectCategory;
   tags: string[];
   aiTools: string[];
-  buildStory?: string;
   creator: {
     name: string;
     url?: string;
     githubLogin: string;
   };
-  pricing: 'free' | 'freemium' | 'paid' | 'open-source' | 'other' | 'unspecified';
-  languages: string[];
   featured: boolean;
   verified: true;
   issue: {
@@ -158,7 +154,7 @@ export interface Project {
 ### 13.1 Schema 規則
 
 - JSON 只包含 approved + verified Projects，不輸出 pending/rejected Issue 的內容。
-- 預設值在 catalog 產生時正規化：`tagline` 由 description 衍生、`category='other'`、`tags=[]`、`pricing='unspecified'`、`languages=[]`、creator name/URL 使用 Issue 作者資料；`buildStory` 與 `sourceUrl` 無值時省略。
+- Project `title` 取自 Issue title 的 `[Project]:` 後方文字；`category='other'`、`tags=[]`，creator name/URL 使用 Issue 作者資料；`sourceUrl` 無值時省略。
 - HTML/Markdown 顯示前必須消毒；如不需要富文字，將 Markdown 轉成受限 HTML 或純文字。
 - 所有 URL 必須 parse 後檢查 `https:`；禁止 `javascript:`、`data:`、`file:` 與帶憑證 URL。
 - `plusOne` 取 GitHub reaction `+1` 的 count；bot 自己的 reaction 若存在亦計入，除非另有明確排除規則。
@@ -183,4 +179,3 @@ export interface Project {
 - 搜尋輸入 debounce 100–200 ms。
 - 列表超過 100 張卡片時分頁或虛擬化；MVP 預設每頁 24 筆。
 - Project 卡片的 CSS 視覺圖樣不得增加網路請求，並需尊重 `prefers-reduced-motion`。
-

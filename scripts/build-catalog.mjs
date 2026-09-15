@@ -11,37 +11,28 @@ const requiredLabels = ['submission', 'status:approved', 'verified'];
 const statusPrefix = 'status:';
 
 const headings = {
-  name: '專案名稱', tagline: '一句話介紹', description: '作品介紹', demo: '作品網址', source: '原始碼網址',
-  category: '分類', tags: '標籤', tools: '使用的 AI 工具', story: 'AI 如何參與', creatorName: '創作者名稱',
-  creatorUrl: '創作者網址', pricing: '價格', languages: '語言', agreements: '投稿確認',
+  description: '作品介紹', demo: '作品網址', source: '原始碼網址', category: '分類', tags: '標籤',
+  tools: '使用的 AI 工具', creatorName: '創作者名稱', creatorUrl: '創作者網址', agreements: '投稿確認',
 };
 
 const categoryMap = new Map([
   ['網站', 'web'], ['行動應用', 'mobile'], ['遊戲', 'game'], ['開發工具', 'developer-tool'],
   ['創意內容', 'creative'], ['生產力', 'productivity'], ['教育', 'education'], ['其他', 'other'],
 ]);
-const pricingMap = new Map([
-  ['免費', 'free'], ['部分免費', 'freemium'], ['付費', 'paid'], ['開源', 'open-source'], ['其他', 'other'], ['未指定', 'unspecified'],
-]);
-
 const httpsUrl = z.string().refine((value) => {
   try { return new URL(value).protocol === 'https:'; } catch { return false; }
 }, 'URL 必須是有效的 HTTPS 網址');
 
 const submissionSchema = z.object({
   name: z.string().min(2).max(80),
-  tagline: z.string().max(140).optional(),
   description: z.string().min(50).max(2_000),
   demoUrl: httpsUrl,
   sourceUrl: httpsUrl.optional(),
   category: z.string(),
   tags: z.array(z.string().min(2).max(24)).max(5),
   aiTools: z.array(z.string().min(1).max(48)).min(1).max(10),
-  buildStory: z.string().max(2_000).optional(),
   creatorName: z.string().max(80).optional(),
   creatorUrl: httpsUrl.optional(),
-  pricing: z.string(),
-  languages: z.array(z.string().min(2).max(35)),
   agreed: z.literal(true),
 });
 
@@ -68,7 +59,7 @@ function plainText(value) {
     .trim();
 }
 
-export function parseIssueBody(body = '') {
+export function parseIssueBody(body = '', issueTitle = '') {
   const sections = new Map();
   let current;
   for (const line of body.split(/\r?\n/)) {
@@ -77,25 +68,19 @@ export function parseIssueBody(body = '') {
     if (current) sections.get(current).push(line);
   }
   const get = (heading) => clean((sections.get(heading) ?? []).join('\n'));
-  const description = get(headings.description);
-  const parsed = {
-    name: get(headings.name),
-    tagline: optional(get(headings.tagline)),
-    description,
+  const name = clean(issueTitle).match(/^\[Project\]\s*:\s*(.+)$/i)?.[1]?.trim() ?? '';
+  return submissionSchema.parse({
+    name,
+    description: get(headings.description),
     demoUrl: get(headings.demo),
     sourceUrl: optional(get(headings.source)),
     category: categoryMap.get(get(headings.category)) ?? 'other',
     tags: list(get(headings.tags), 5),
     aiTools: list(get(headings.tools), 10),
-    buildStory: optional(get(headings.story)),
     creatorName: optional(get(headings.creatorName)),
     creatorUrl: optional(get(headings.creatorUrl)),
-    pricing: pricingMap.get(get(headings.pricing)) ?? 'unspecified',
-    languages: list(get(headings.languages)),
     agreed: /- \[[xX]\]/.test(get(headings.agreements)),
-  };
-  if (!parsed.tagline) parsed.tagline = plainText(description).slice(0, 140);
-  return submissionSchema.parse(parsed);
+  });
 }
 
 export function slugify(value, issueNumber) {
@@ -148,27 +133,23 @@ async function approvalDate(issueNumber, fallback) {
 }
 
 async function normalizeIssue(issue) {
-  const fields = parseIssueBody(issue.body ?? '');
+  const fields = parseIssueBody(issue.body ?? '', issue.title ?? '');
   const approvedAt = await approvalDate(issue.number, issue.updated_at);
   return {
     id: `gh:${repository}#${issue.number}`,
     slug: slugify(fields.name, issue.number),
     title: fields.name,
-    tagline: fields.tagline,
     description: plainText(fields.description),
     demoUrl: fields.demoUrl,
     ...(fields.sourceUrl ? { sourceUrl: fields.sourceUrl } : {}),
     category: fields.category,
     tags: fields.tags,
     aiTools: fields.aiTools,
-    ...(fields.buildStory ? { buildStory: plainText(fields.buildStory) } : {}),
     creator: {
       name: fields.creatorName ?? issue.user.login,
       url: fields.creatorUrl ?? issue.user.html_url,
       githubLogin: issue.user.login,
     },
-    pricing: fields.pricing,
-    languages: fields.languages,
     featured: issue.labels.some((label) => label.name === 'featured'),
     verified: true,
     issue: {
@@ -192,7 +173,7 @@ async function validateOne(issueNumber) {
     console.log(`Issue #${issueNumber} 不是 submission，略過驗證。`);
     return;
   }
-  parseIssueBody(issue.body ?? '');
+  parseIssueBody(issue.body ?? '', issue.title ?? '');
   const statuses = issue.labels.filter((label) => label.name.startsWith(statusPrefix));
   if (statuses.length !== 1) throw new Error(`Issue #${issueNumber} 必須恰有一個 status:* label。`);
   console.log(`Issue #${issueNumber} 投稿格式驗證通過。`);
@@ -216,7 +197,7 @@ async function buildCatalog() {
     seenSlugs.set(project.slug, project.issue.number);
   }
   projects.sort((a, b) => Date.parse(b.approvedAt) - Date.parse(a.approvedAt) || a.id.localeCompare(b.id));
-  const catalog = { schemaVersion: 1, generatedAt: new Date().toISOString(), repository, projects };
+  const catalog = { schemaVersion: 2, generatedAt: new Date().toISOString(), repository, projects };
   await mkdir(dirname(outputPath), { recursive: true });
   const temporary = `${outputPath}.tmp`;
   await writeFile(temporary, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');

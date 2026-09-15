@@ -8,24 +8,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        <!-- schema-version: 1 -->
-        感謝投稿！只有下方標示「必填」的五個項目一定要填，其他資料可留白。
-
-  - type: input
-    id: project_name
-    attributes:
-      label: 專案名稱
-      description: 公開顯示的作品名稱，2–80 字。
-      placeholder: 例如：Prompt Pantry
-    validations:
-      required: true
-
-  - type: input
-    id: tagline
-    attributes:
-      label: 一句話介紹
-      description: 選填；留白時會從作品介紹自動產生。
-      placeholder: 用一句話說明這件作品解決什麼問題
+        <!-- schema-version: 2 -->
+        感謝投稿！請直接在 Issue 標題的 `[Project]:` 後填寫專案名稱；表單只保留必要資料與少量選填項目。
 
   - type: textarea
     id: description
@@ -83,12 +67,6 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: build_story
-    attributes:
-      label: AI 如何參與
-      description: 選填；可分享工作流程、提示方法或學到的事。
-
   - type: input
     id: creator_name
     attributes:
@@ -101,26 +79,6 @@ body:
       label: 創作者網址
       description: 選填；留白時使用你的 GitHub profile。
       placeholder: https://github.com/username
-
-  - type: dropdown
-    id: pricing
-    attributes:
-      label: 價格
-      description: 選填；未選擇時顯示「未指定」。
-      options:
-        - 未指定
-        - 免費
-        - 部分免費
-        - 付費
-        - 開源
-        - 其他
-
-  - type: input
-    id: languages
-    attributes:
-      label: 語言
-      description: 選填；以逗號分隔。
-      placeholder: zh-TW, en
 
   - type: checkboxes
     id: agreements

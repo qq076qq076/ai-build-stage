@@ -2,7 +2,7 @@
 import { ArrowLeft, ArrowUpRight, CodeXml, MessageSquare, ThumbsUp } from '@lucide/astro';
 import PhysicalButton from '../../components/ui/PhysicalButton.astro';
 import StatusLed from '../../components/ui/StatusLed.astro';
-import { categoryLabels, loadCatalog, pricingLabels, type Project } from '../../lib/catalog';
+import { categoryLabels, loadCatalog, type Project } from '../../lib/catalog';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export function getStaticPaths() {
@@ -17,7 +17,7 @@ const projectPath = `${base}projects/${project.slug}/`;
 const commentUrl = `${project.issue.url}#new_comment_field`;
 ---
 
-<BaseLayout title={`${project.title}｜AI Build Stage`} description={project.tagline} canonicalPath={projectPath}>
+<BaseLayout title={`${project.title}｜AI Build Stage`} description={project.description.slice(0, 160)} canonicalPath={projectPath}>
   <article class="detail shell">
     <a class="back-link" href={`${base}projects/`}><ArrowLeft size={18} />返回所有作品</a>
     <header class="detail-header">
@@ -25,7 +25,6 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
         <StatusLed>Verified submission</StatusLed>
         <p class="technical-label category">{categoryLabels[project.category]} / ISSUE #{project.issue.number}</p>
         <h1 class="embossed-text">{project.title}</h1>
-        <p class="tagline">{project.tagline}</p>
         <div class="actions">
           <PhysicalButton href={project.demoUrl} variant="primary" external>開啟作品 <ArrowUpRight size={18} /></PhysicalButton>
           {project.sourceUrl && <PhysicalButton href={project.sourceUrl} external><CodeXml size={18} />查看原始碼</PhysicalButton>}
@@ -64,16 +63,13 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
     <div class="detail-grid">
       <section class="content-panel">
         <p class="technical-label">Project brief</p><h2>作品介紹</h2><p>{project.description}</p>
-        {project.buildStory && <><h2>AI 如何參與</h2><p>{project.buildStory}</p></>}
       </section>
       <aside class="spec-panel">
         <p class="technical-label">Project data</p>
         <dl>
           <div><dt>創作者</dt><dd>{project.creator.url ? <a href={project.creator.url} target="_blank" rel="noopener noreferrer">{project.creator.name}</a> : project.creator.name}</dd></div>
-          <div><dt>價格</dt><dd>{pricingLabels[project.pricing]}</dd></div>
           <div><dt>AI 工具</dt><dd>{project.aiTools.join('、')}</dd></div>
           <div><dt>標籤</dt><dd>{project.tags.length ? project.tags.join('、') : '未指定'}</dd></div>
-          <div><dt>語言</dt><dd>{project.languages.length ? project.languages.join('、') : '未指定'}</dd></div>
           <div><dt>上架時間</dt><dd><time datetime={project.approvedAt}>{new Date(project.approvedAt).toLocaleDateString('zh-TW')}</time></dd></div>
         </dl>
       </aside>
@@ -89,7 +85,6 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
   .detail-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.42fr); gap: clamp(2rem, 6vw, 5rem); align-items: end; padding-block: 3rem 4rem; }
   .category { margin: 1.5rem 0 0; color: var(--color-accent-dark); }
   h1 { max-width: 13ch; margin: 0.65rem 0 0; font-size: clamp(3.2rem, 8vw, 6.5rem); line-height: 0.95; letter-spacing: -0.06em; }
-  .tagline { max-width: 58ch; margin: 1.5rem 0 0; color: var(--color-ink-muted); font-size: 1.18rem; }
   .actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
   .telemetry { padding: 1.5rem; border: 3px solid #545e63; border-radius: var(--radius-lg); color: #e1e9e5; background-color: var(--color-dark-panel); box-shadow: inset 0.4rem 0.4rem 0.8rem #101314, var(--shadow-card); }
   .telemetry > p { margin: 0; color: #92a19b; }

@@ -16,7 +16,6 @@ export function normalizeSearchText(value: string): string {
 export function matchesProject(project: Project, filters: ProjectFilters): boolean {
   const haystack = normalizeSearchText([
     project.title,
-    project.tagline,
     project.description,
     project.creator.name,
     project.creator.githubLogin,

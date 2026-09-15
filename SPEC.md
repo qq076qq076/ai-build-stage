@@ -1,7 +1,7 @@
 # AI Build Stage — 規格索引
 
-> 文件狀態：Draft v0.5  
-> 最後更新：2026-09-14  
+> 文件狀態：Draft v0.6  
+> 最後更新：2026-09-15  
 > 適用範圍：MVP 產品、Astro 前端、GitHub Issues、GitHub Actions、GitHub Pages  
 > 核心約束：0 backend；不得導入自建 API、資料庫或驗證服務
 
@@ -38,7 +38,8 @@
 - Like／推薦只計對應 Issue 的 `+1` reaction；評論 canonical source 是同一 Issue 的 comments。
 - 寫入 reactions/comments 時導向 GitHub，由 GitHub 處理登入與濫用防護；網站本身不持有寫入 token。
 - 投稿表單不包含 `cover_image_url` 或 `gallery_urls`，Project 展示不依賴投稿圖片。
-- MVP 表單只有 `project_name`、`description`、`demo_url`、`ai_tools`、`agreements` 五個必填項目；其他欄位選填或由系統推導。
+- Project 名稱直接取自 Issue title 的 `[Project]:` 後方文字，不在表單內重複填寫。
+- MVP 表單只有 `description`、`demo_url`、`ai_tools`、`agreements` 四個必填項目；其他欄位選填或由 GitHub 推導。
 
 ## 4. 核心技術決策
 

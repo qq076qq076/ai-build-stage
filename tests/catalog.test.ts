@@ -7,15 +7,12 @@ const project: Project = {
   id: 'gh:example/stage#12',
   slug: 'mechanical-notes',
   title: 'Mechanical Notes',
-  tagline: '用 AI 整理研究筆記',
   description: '將散落的研究資料整理成可搜尋的卡片。',
   demoUrl: 'https://example.com/demo',
   category: 'productivity',
   tags: ['筆記'],
   aiTools: ['Codex'],
   creator: { name: 'Maker', githubLogin: 'maker' },
-  pricing: 'free',
-  languages: ['zh-TW'],
   featured: false,
   verified: true,
   issue: { number: 12, url: 'https://github.com/example/stage/issues/12', state: 'open', reactions: { plusOne: 8 }, commentsCount: 3 },
@@ -27,7 +24,7 @@ const project: Project = {
 describe('catalog schema', () => {
   it('接受符合規格且不含圖片欄位的 Project', () => {
     expect(projectSchema.parse(project)).toEqual(project);
-    expect(projectCatalogSchema.parse({ schemaVersion: 1, generatedAt: '2026-09-14T00:00:00.000Z', repository: 'example/stage', projects: [project] }).projects).toHaveLength(1);
+    expect(projectCatalogSchema.parse({ schemaVersion: 2, generatedAt: '2026-09-14T00:00:00.000Z', repository: 'example/stage', projects: [project] }).projects).toHaveLength(1);
   });
 
   it('拒絕非 HTTPS demo URL', () => {
@@ -52,14 +49,8 @@ describe('search and sort', () => {
 });
 
 describe('Issue Form parser', () => {
-  it('解析五個必要欄位並套用預設值', () => {
-    const fields = parseIssueBody(`### 專案名稱
-Mechanical Notes
-
-### 一句話介紹
-_No response_
-
-### 作品介紹
+  it('從 Issue title 取得名稱並解析四個必要欄位', () => {
+    const fields = parseIssueBody(`### 作品介紹
 這是一段超過五十個字的完整作品介紹，用來說明專案如何協助使用者整理研究資料，並且確保投稿格式能夠通過自動驗證程序。
 
 ### 作品網址
@@ -70,13 +61,26 @@ Codex, ChatGPT
 
 ### 投稿確認
 - [x] 我同意投稿規範
-`);
+`, '[Project]: Mechanical Notes');
     expect(fields.name).toBe('Mechanical Notes');
     expect(fields.aiTools).toEqual(['Codex', 'ChatGPT']);
     expect(fields.category).toBe('other');
-    expect(fields.pricing).toBe('unspecified');
     expect(fields.tags).toEqual([]);
-    expect(fields.tagline?.length).toBeGreaterThan(0);
+  });
+
+  it('拒絕沒有專案名稱的 Issue title', () => {
+    expect(() => parseIssueBody(`### 作品介紹
+這是一段超過五十個字的完整作品介紹，用來說明專案如何協助使用者整理研究資料，並且確保投稿格式能夠通過自動驗證程序。
+
+### 作品網址
+https://example.com
+
+### 使用的 AI 工具
+Codex
+
+### 投稿確認
+- [x] 我同意投稿規範
+`, '[Project]: ')).toThrow();
   });
 
   it('中文名稱使用 Issue number 作為穩定 slug fallback', () => {

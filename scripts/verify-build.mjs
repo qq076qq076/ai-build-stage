@@ -17,7 +17,7 @@ const requiredFiles = [
 for (const file of requiredFiles) await access(resolve(dist, file));
 
 const catalog = JSON.parse(await readFile(resolve(dist, 'data/projects.json'), 'utf8'));
-if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.projects)) {
+if (catalog.schemaVersion !== 2 || !Array.isArray(catalog.projects)) {
   throw new Error('dist/data/projects.json 不符合 catalog 基本結構。');
 }
 

@@ -46,31 +46,26 @@ new submission
 
 | ID | 類型 | 必填 | 規則／用途 |
 |---|---|---:|---|
-| `project_name` | input | 是 | 2–80 字；Project 顯示名稱 |
-| `tagline` | input | 否 | 10–140 字；未填時由 `description` 第一段截取最多 140 字 |
 | `description` | textarea | 是 | 50–2,000 字；允許 Markdown，輸出需消毒 |
 | `demo_url` | input | 是 | 公開 `https://` URL；不得為 localhost/private IP |
 | `source_url` | input | 否 | `https://` repository URL |
 | `category` | dropdown | 否 | 單選、受控詞彙；未填時為 `other` |
 | `tags` | input | 否 | 逗號分隔，最多 5 個，每項 2–24 字；未填時為空陣列 |
 | `ai_tools` | input | 是 | 逗號分隔，至少 1 個，最多 10 個 |
-| `build_story` | textarea | 否 | AI 如何參與，最多 2,000 字；未填時不顯示此區塊 |
 | `creator_name` | input | 否 | 公開顯示名稱；未填時使用 Issue 作者的 GitHub login |
 | `creator_url` | input | 否 | 公開 HTTPS 個人／團隊連結；未填時使用 Issue 作者的 GitHub profile URL |
-| `pricing` | dropdown | 否 | free / freemium / paid / open-source / other；未填時為 `unspecified` |
-| `languages` | input | 否 | BCP 47 或受控顯示值，可多選語言；未填時為空陣列 |
 | `agreements` | checkboxes | 是 | 單一必要確認：有權提交內容、理解資料公開，並同意投稿規範 |
 
-MVP 只有五個需要投稿者操作的必填項目：`project_name`、`description`、`demo_url`、`ai_tools` 與 `agreements`。`slug`、GitHub 作者帳號、投稿時間、Issue URL 與 Issue number 均由 Action/GitHub 自動產生，不出現在表單中。`cover_image_url` 與 `gallery_urls` 不提供、也不解析。
+Project 顯示名稱取自 Issue title 的 `[Project]:` 後方文字，須為 2–80 字。MVP 表單只有四個必填項目：`description`、`demo_url`、`ai_tools` 與 `agreements`。`slug`、GitHub 作者帳號、投稿時間、Issue URL 與 Issue number 均由 Action/GitHub 自動產生，不出現在表單中。`project_name`、`tagline`、`build_story`、`pricing`、`languages`、`cover_image_url` 與 `gallery_urls` 均不提供、也不解析。
 
 ### 10.2 表單穩定性
 
 - 每個欄位的 Markdown heading 必須固定；parser 以 heading + sentinel comment 或 GitHub form 產生的固定結構解析。
-- Issue title 格式：`[Project]: <project_name>`，但資料不得只依賴 title 解析。
+- Issue title 格式：`[Project]: <project_name>`，Project 名稱以此為唯一來源；parser 必須驗證前綴與名稱長度。
 - 表單預設 labels：`submission`, `status:pending`。
 - 選填欄位若 GitHub Issue Form 無法直接呈現預設值，parser 必須依上表套用預設值；不得因空值造成驗證失敗。
 - 禁用 blank issues；提供 security／general contact links，避免非投稿內容混入。
-- Form schema 改版時新增 `schema_version` hidden marker（例如 Issue body comment `<!-- schema-version: 1 -->`），parser 至少支援現行版與前一版。
+- Form schema 改版時更新 `schema_version` hidden marker（目前為 Issue body comment `<!-- schema-version: 2 -->`），parser 至少支援現行版與前一版。
 
 ## 11. Labels 與狀態
 
@@ -170,4 +165,3 @@ concurrency:
 - 部署採 Astro 官方維護的 GitHub Pages Action 搭配 `actions/deploy-pages`；所有 Actions 仍 pin 完整 commit SHA，不在規格內鎖死會過期的 tag 版本。
 - 自訂網域若啟用，提交 `CNAME` 並啟用 HTTPS enforcement。
 - 部署失敗時保留上一版成功 Pages，不發布半成品；Action summary 提供失敗 Issue number 與欄位，不輸出 secrets。
-
