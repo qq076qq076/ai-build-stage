@@ -31,6 +31,14 @@ new submission
 6. Action parse、validate、normalize、排序，生成 JSON 與網站；驗證失敗不得發布不完整資料。
 7. Issue 更新後重新部署。若移除 `verified`、改成 rejected/withdrawn 或刪除 Issue，下一次成功部署移除該 Project。
 
+### Actions 觸發策略
+
+- 投稿驗證只監聽 `opened`、`edited`、`reopened`，一般 label 變動不會重跑驗證。
+- Pages 只在 Issue 已同時具備 `submission`、`status:approved`、`verified` 且內容被編輯，或 `status:approved`／`verified` 改變而影響公開資格時建置。
+- `status:pending`、category、tag、`featured` 等一般 label 事件不執行 Pages 建置；GitHub 仍可能在 Actions 歷史留下快速略過（skipped）的事件紀錄。
+- approved Issue 的留言異動會更新評論統計；其他 Issue 的留言不建置。Reaction 沒有對應的 Actions 事件，最晚由每六小時一次的排程同步。
+- `push` 到 `main`、手動執行與排程仍會完整建置，以涵蓋程式變更及 GitHub 未提供事件的互動資料。
+
 ### 9.3 更新與撤回
 
 - 創作者直接編輯原 Issue，不得另開 Issue 取代同一 Project。

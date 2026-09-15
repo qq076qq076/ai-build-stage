@@ -2,7 +2,7 @@ name: 驗證作品投稿
 
 on:
   issues:
-    types: [opened, edited, reopened, labeled, unlabeled]
+    types: [opened, edited, reopened]
 
 permissions:
   contents: read
@@ -26,4 +26,3 @@ jobs:
         run: npm run catalog:validate -- "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
