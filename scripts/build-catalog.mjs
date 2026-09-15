@@ -25,7 +25,9 @@ const httpsUrl = z.string().refine((value) => {
 
 const submissionSchema = z.object({
   name: z.string().min(2).max(80),
-  description: z.string().min(50).max(2_000),
+  description: z.string()
+    .min(10, '作品介紹至少需要 10 個字。')
+    .max(2_000, '作品介紹不可超過 2,000 個字。'),
   demoUrl: httpsUrl,
   sourceUrl: httpsUrl.optional(),
   category: z.string(),

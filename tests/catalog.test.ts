@@ -51,7 +51,7 @@ describe('search and sort', () => {
 describe('Issue Form parser', () => {
   it('從 Issue title 取得名稱並解析四個必要欄位', () => {
     const fields = parseIssueBody(`### 作品介紹
-這是一段超過五十個字的完整作品介紹，用來說明專案如何協助使用者整理研究資料，並且確保投稿格式能夠通過自動驗證程序。
+單機五子棋，可選擇不同強度挑戰電腦。
 
 ### 作品網址
 https://example.com
@@ -70,7 +70,7 @@ Codex, ChatGPT
 
   it('拒絕沒有專案名稱的 Issue title', () => {
     expect(() => parseIssueBody(`### 作品介紹
-這是一段超過五十個字的完整作品介紹，用來說明專案如何協助使用者整理研究資料，並且確保投稿格式能夠通過自動驗證程序。
+單機五子棋，可選擇不同強度挑戰電腦。
 
 ### 作品網址
 https://example.com
@@ -81,6 +81,21 @@ Codex
 ### 投稿確認
 - [x] 我同意投稿規範
 `, '[Project]: ')).toThrow();
+  });
+
+  it('以繁體中文說明過短的作品介紹', () => {
+    expect(() => parseIssueBody(`### 作品介紹
+太短
+
+### 作品網址
+https://example.com
+
+### 使用的 AI 工具
+Codex
+
+### 投稿確認
+- [x] 我同意投稿規範
+`, '[Project]: Mechanical Notes')).toThrow('作品介紹至少需要 10 個字。');
   });
 
   it('中文名稱使用 Issue number 作為穩定 slug fallback', () => {

@@ -46,7 +46,7 @@ new submission
 
 | ID | 類型 | 必填 | 規則／用途 |
 |---|---|---:|---|
-| `description` | textarea | 是 | 50–2,000 字；允許 Markdown，輸出需消毒 |
+| `description` | textarea | 是 | 10–2,000 字；允許 Markdown，輸出需消毒 |
 | `demo_url` | input | 是 | 公開 `https://` URL；不得為 localhost/private IP |
 | `source_url` | input | 否 | `https://` repository URL |
 | `category` | dropdown | 否 | 單選、受控詞彙；未填時為 `other` |

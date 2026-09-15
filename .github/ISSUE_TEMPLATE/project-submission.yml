@@ -15,7 +15,7 @@ body:
     id: description
     attributes:
       label: 作品介紹
-      description: 請用 50–2,000 字說明用途、主要功能與適合的使用者。
+      description: 請用 10–2,000 字簡單說明作品用途或主要功能。
       placeholder: 這件作品可以……
     validations:
       required: true
