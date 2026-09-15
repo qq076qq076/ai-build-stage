@@ -54,21 +54,18 @@ const latest = featured.length ? featured : [...catalog.projects].sort((a, b) =>
       <h2 id="principles-title">一套透明、可追溯的展示流程</h2>
     </header>
     <div class="principle-grid">
-      <BoltedPanel tag="article">
-        <span class="icon-housing"><Sparkles size={26} stroke-width={1.5} /></span>
-        <p class="technical-label">01 / Submit</p>
+      <BoltedPanel tag="article" class="principle-card">
+        <div class="principle-meta"><span class="principle-icon"><Sparkles size={26} stroke-width={1.5} /></span><p class="technical-label">01 / Submit</p></div>
         <h3>用 Issue 投稿</h3>
         <p>依照精簡表單提供作品名稱、介紹、連結與使用的 AI 工具。</p>
       </BoltedPanel>
-      <BoltedPanel tag="article">
-        <span class="icon-housing"><ShieldCheck size={26} stroke-width={1.5} /></span>
-        <p class="technical-label">02 / Verify</p>
+      <BoltedPanel tag="article" class="principle-card">
+        <div class="principle-meta"><span class="principle-icon"><ShieldCheck size={26} stroke-width={1.5} /></span><p class="technical-label">02 / Verify</p></div>
         <h3>人工審核上架</h3>
         <p>只有同時取得 approved 與 verified 標記的作品會出現在網站。</p>
       </BoltedPanel>
-      <BoltedPanel tag="article">
-        <span class="icon-housing"><CodeXml size={26} stroke-width={1.5} /></span>
-        <p class="technical-label">03 / Respond</p>
+      <BoltedPanel tag="article" class="principle-card">
+        <div class="principle-meta"><span class="principle-icon"><CodeXml size={26} stroke-width={1.5} /></span><p class="technical-label">03 / Respond</p></div>
         <h3>互動回到 GitHub</h3>
         <p>推薦與留言保留在原始 Issue，不建立另一套不透明的社群資料庫。</p>
       </BoltedPanel>
@@ -107,18 +104,19 @@ const latest = featured.length ? featured : [...catalog.projects].sort((a, b) =>
   .principles header p { color: var(--color-accent-dark); }
   h2 { margin: 0.5rem 0 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; letter-spacing: -0.035em; }
   .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .principle-grid article { min-height: 19rem; padding: 2.4rem 2rem 2rem; transition: transform 300ms var(--ease-mechanical), box-shadow 300ms ease; }
-  .principle-grid article:hover { box-shadow: var(--shadow-floating); transform: translateY(-4px); }
-  .principle-grid .technical-label { margin: 1.5rem 0 0.6rem; color: var(--color-accent-dark); }
-  .principle-grid h3 { margin: 0; font-size: 1.35rem; }
-  .principle-grid article > p:last-child { margin: 0.8rem 0 0; color: var(--color-ink-muted); }
-  .icon-housing { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 50%; color: var(--color-accent-dark); background: var(--color-chassis); box-shadow: var(--shadow-floating); }
+  .principle-grid :global(.principle-card) { min-height: 19rem; transition: transform 300ms var(--ease-mechanical), box-shadow 300ms ease; }
+  .principle-grid :global(.principle-card:hover) { box-shadow: var(--shadow-floating); transform: translateY(-4px); }
+  .principle-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .principle-icon { display: inline-flex; flex: 0 0 auto; color: var(--color-accent-dark); }
+  .principle-meta .technical-label { margin: 0; color: var(--color-accent-dark); text-align: right; }
+  .principle-grid h3 { margin: 2rem 0 0; font-size: 1.35rem; }
+  .principle-grid :global(.principle-card) > p:last-child { margin: 0.8rem 0 0; color: var(--color-ink-muted); }
   @media (max-width: 56rem) {
     .hero { grid-template-columns: 1fr; min-height: auto; }
     .hero-copy { max-width: 44rem; }
     .principle-grid { grid-template-columns: 1fr; }
     .latest-grid { grid-template-columns: 1fr; }
-    .principle-grid article { min-height: 0; }
+    .principle-grid :global(.principle-card) { min-height: 0; }
   }
   @media (max-width: 36rem) {
     .hero { padding-block: 3.5rem; }

@@ -91,6 +91,7 @@ Elevation 對照：
 ### Bolted panel／Project card
 
 - 16px radius、chassis/panel surface、`--shadow-card`，hover 最多上移 4px。
+- Bolted panel 預設提供 32px 內容 padding，mobile 縮為 24px；頁面不得依賴跨元件 selector 補上必要內距。
 - 四角螺絲用 pseudo-elements 或共用 `PanelHardware` 裝飾實作，距邊 12px；裝飾 `pointer-events: none`、`aria-hidden="true"`。
 - 右上可放三個 recessed vent slots；在小尺寸卡片或 mobile 可隱藏，避免資訊密度過高。
 - Project card 不使用投稿圖片；左側或頂部以 category 色條、project initials 或 slug 產生的 CSS schematic pattern 建立差異。
@@ -138,7 +139,7 @@ Elevation 對照：
 
 - 使用 `@lucide/astro`，不得安裝 React/Vue icon runtime；icon 在 build time 輸出 SVG，預設 stroke width 1.5。
 - inline icon 16–18px、一般 control 20–24px、feature housing 28–32px。
-- icon 不單獨漂浮：置於 recessed/floating housing、按鈕或文字 label 中；純 icon button 必須有 accessible name 與 tooltip。
+- icon 應與文字 label 或資訊列成組；只有具備控制器語意時才使用 recessed/floating housing。首頁流程卡的 icon 不加圓形凸起底座，並與右側 technical label 對齊。純 icon button 必須有 accessible name 與 tooltip。
 - GitHub brand mark 優先使用官方允許的 SVG asset，不能以近似 Lucide icon 冒充品牌標誌。
 
 ## 8.14 視覺效能與驗證
