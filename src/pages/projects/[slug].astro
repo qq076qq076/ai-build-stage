@@ -33,8 +33,31 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
       </div>
       <aside class="telemetry screen-grid">
         <p class="technical-label">Public telemetry</p>
-        <dl><div><dt><ThumbsUp size={18} />推薦</dt><dd>{project.issue.reactions.plusOne}</dd></div><div><dt><MessageSquare size={18} />評論</dt><dd>{project.issue.commentsCount}</dd></div></dl>
-        <a href={project.issue.url} target="_blank" rel="noopener noreferrer">前往 GitHub Issue #{project.issue.number}</a>
+        <div class="telemetry-actions">
+          <a
+            class="telemetry-action"
+            href={project.issue.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`前往 GitHub 推薦 ${project.title}，目前有 ${project.issue.reactions.plusOne} 次推薦`}
+          >
+            <span class="telemetry-label"><ThumbsUp size={18} />推薦</span>
+            <strong>{project.issue.reactions.plusOne}</strong>
+            <span class="telemetry-link">前往 GitHub 按 👍</span>
+          </a>
+          <a
+            class="telemetry-action"
+            href={commentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`前往 GitHub 評論 ${project.title}，目前有 ${project.issue.commentsCount} 則評論`}
+          >
+            <span class="telemetry-label"><MessageSquare size={18} />評論</span>
+            <strong>{project.issue.commentsCount}</strong>
+            <span class="telemetry-link">查看或留下評論</span>
+          </a>
+        </div>
+        <p class="telemetry-note">互動將記錄在 GitHub Issue #{project.issue.number}</p>
       </aside>
     </header>
 
@@ -56,10 +79,6 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
       </aside>
     </div>
 
-    <section class="response-panel">
-      <div><p class="technical-label">Community response</p><h2>推薦或留下評論</h2><p>互動會保留在對應的 GitHub Issue，公開且可追溯。</p></div>
-      <div class="actions"><PhysicalButton href={project.issue.url} external><ThumbsUp size={18} />在 GitHub 推薦</PhysicalButton><PhysicalButton href={commentUrl} external><MessageSquare size={18} />留下評論</PhysicalButton></div>
-    </section>
   </article>
 </BaseLayout>
 
@@ -74,25 +93,26 @@ const commentUrl = `${project.issue.url}#new_comment_field`;
   .actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
   .telemetry { padding: 1.5rem; border: 3px solid #545e63; border-radius: var(--radius-lg); color: #e1e9e5; background-color: var(--color-dark-panel); box-shadow: inset 0.4rem 0.4rem 0.8rem #101314, var(--shadow-card); }
   .telemetry > p { margin: 0; color: #92a19b; }
-  .telemetry dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.5rem 0; }
-  .telemetry dl div { padding: 1rem; border: 1px solid rgb(168 178 189 / 12%); border-radius: var(--radius-md); }
-  .telemetry dt { display: flex; align-items: center; gap: 0.45rem; color: #9eada7; font-size: 0.75rem; }
-  .telemetry dd { margin: 0.7rem 0 0; color: var(--color-accent); font: 500 2rem/1 var(--font-mono); }
-  .telemetry a { color: #d8e2de; font: 600 0.72rem/1.5 var(--font-mono); }
+  .telemetry-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.5rem 0 1rem; }
+  .telemetry-action { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; padding: 1rem; border: 1px solid rgb(168 178 189 / 18%); border-radius: var(--radius-md); color: #d8e2de; background: rgb(255 255 255 / 3%); text-decoration: none; transition: border-color 150ms ease, background 150ms ease, transform 150ms ease; }
+  .telemetry-action:hover { border-color: var(--color-accent); background: rgb(193 255 67 / 8%); transform: translateY(-2px); }
+  .telemetry-action:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+  .telemetry-label { display: flex; align-items: center; gap: 0.45rem; color: #9eada7; font-size: 0.75rem; }
+  .telemetry-action strong { margin-top: 0.7rem; color: var(--color-accent); font: 500 2rem/1 var(--font-mono); }
+  .telemetry-link { margin-top: 0.8rem; color: #d8e2de; font: 600 0.68rem/1.5 var(--font-mono); }
+  .telemetry-note { font: 500 0.68rem/1.5 var(--font-mono); }
   .detail-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.6fr); gap: 2rem; }
-  .content-panel, .spec-panel, .response-panel { padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgb(255 255 255 / 55%); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+  .content-panel, .spec-panel { padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgb(255 255 255 / 55%); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
   .content-panel { background: rgb(240 242 245 / 52%); }
-  .content-panel > .technical-label, .spec-panel > .technical-label, .response-panel .technical-label { margin: 0; color: var(--color-accent-dark); }
+  .content-panel > .technical-label, .spec-panel > .technical-label { margin: 0; color: var(--color-accent-dark); }
   h2 { margin: 0.6rem 0 0; font-size: 1.75rem; letter-spacing: -0.025em; }
-  .content-panel > p:not(.technical-label), .response-panel p:not(.technical-label) { max-width: 65ch; color: var(--color-ink-muted); white-space: pre-line; }
+  .content-panel > p:not(.technical-label) { max-width: 65ch; color: var(--color-ink-muted); white-space: pre-line; }
   .content-panel h2:not(:first-of-type) { margin-top: 2.2rem; }
   .spec-panel dl { margin: 1.5rem 0 0; }
   .spec-panel dl div { padding: 0.85rem 0; border-top: 1px solid rgb(163 177 198 / 35%); }
   .spec-panel dt { color: var(--color-ink-muted); font: 600 0.68rem/1.4 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }
   .spec-panel dd { margin: 0.25rem 0 0; font-weight: 650; }
   .spec-panel a { color: var(--color-accent-dark); }
-  .response-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 2rem; }
-  .response-panel .actions { flex-shrink: 0; margin: 0; }
-  @media (max-width: 52rem) { .detail-header, .detail-grid { grid-template-columns: 1fr; } .response-panel { align-items: stretch; flex-direction: column; } }
+  @media (max-width: 52rem) { .detail-header, .detail-grid { grid-template-columns: 1fr; } }
   @media (max-width: 36rem) { .actions { display: grid; } }
 </style>
