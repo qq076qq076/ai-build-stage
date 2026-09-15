@@ -1,4 +1,6 @@
+import { lookup } from 'node:dns/promises';
 import { mkdir, rename, writeFile } from 'node:fs/promises';
+import { isIP } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
@@ -9,6 +11,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = resolve(root, 'public/data/projects.json');
 const requiredLabels = ['submission', 'status:approved', 'verified'];
 const statusPrefix = 'status:';
+const metadataImageKeys = ['og:image:secure_url', 'og:image', 'twitter:image', 'twitter:image:src'];
+const metadataResponseLimit = 512 * 1024;
 
 const headings = {
   description: '作品介紹', demo: '作品網址', source: '原始碼網址', category: '分類', tags: '標籤',
@@ -59,6 +63,133 @@ function plainText(value) {
     .replace(/[`*_>#~-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function decodeHtmlEntities(value) {
+  return value.replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt);/gi, (entity, key) => {
+    const normalized = key.toLowerCase();
+    if (normalized.startsWith('#x')) return String.fromCodePoint(Number.parseInt(normalized.slice(2), 16));
+    if (normalized.startsWith('#')) return String.fromCodePoint(Number.parseInt(normalized.slice(1), 10));
+    return { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>' }[normalized] ?? entity;
+  });
+}
+
+function safeMetadataUrl(value, base) {
+  try {
+    const url = new URL(decodeHtmlEntities(value.trim()), base);
+    const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
+    if (url.protocol !== 'https:' || url.username || url.password) return undefined;
+    if (hostname === 'localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.local')) return undefined;
+    if (/^(?:0|10|127|169\.254|192\.168)\./.test(hostname)) return undefined;
+    if (/^172\.(?:1[6-9]|2\d|3[01])\./.test(hostname)) return undefined;
+    if (hostname === '[::]' || hostname === '[::1]') return undefined;
+    return url;
+  } catch {
+    return undefined;
+  }
+}
+
+function isPrivateAddress(address) {
+  const normalized = address.toLowerCase().split('%')[0];
+  if (isIP(normalized) === 4) {
+    const [first, second] = normalized.split('.').map(Number);
+    return first === 0 || first === 10 || first === 127 || first >= 224 ||
+      (first === 100 && second >= 64 && second <= 127) ||
+      (first === 169 && second === 254) ||
+      (first === 172 && second >= 16 && second <= 31) ||
+      (first === 192 && (second === 0 || second === 168)) ||
+      (first === 198 && (second === 18 || second === 19));
+  }
+  if (isIP(normalized) === 6) {
+    return normalized === '::' || normalized === '::1' || normalized.startsWith('::ffff:') ||
+      /^f[cd]/.test(normalized) || /^fe[89ab]/.test(normalized) || normalized.startsWith('ff') ||
+      normalized.startsWith('2001:db8');
+  }
+  return true;
+}
+
+async function publicMetadataUrl(value, base) {
+  const url = safeMetadataUrl(value, base);
+  if (!url) return undefined;
+  const hostname = url.hostname.replace(/^\[|\]$/g, '');
+  const addresses = isIP(hostname) ? [{ address: hostname }] : await lookup(hostname, { all: true, verbatim: true });
+  if (!addresses.length || addresses.some(({ address }) => isPrivateAddress(address))) return undefined;
+  return url;
+}
+
+function metaAttributes(tag) {
+  const attributes = new Map();
+  const pattern = /([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+  for (const match of tag.matchAll(pattern)) {
+    attributes.set(match[1].toLowerCase(), match[2] ?? match[3] ?? match[4] ?? '');
+  }
+  return attributes;
+}
+
+export function extractMetadataImage(html, pageUrl) {
+  const candidates = new Map();
+  for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
+    const attributes = metaAttributes(tag);
+    const key = (attributes.get('property') ?? attributes.get('name') ?? '').toLowerCase();
+    const content = attributes.get('content');
+    if (metadataImageKeys.includes(key) && content && !candidates.has(key)) candidates.set(key, content);
+  }
+  for (const key of metadataImageKeys) {
+    const candidate = candidates.get(key);
+    const image = candidate ? safeMetadataUrl(candidate, pageUrl) : undefined;
+    if (image) return image.href;
+  }
+  return undefined;
+}
+
+async function readResponseHead(response) {
+  if (!response.body) return '';
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let html = '';
+  let received = 0;
+  try {
+    while (received < metadataResponseLimit) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const remaining = metadataResponseLimit - received;
+      const chunk = value.byteLength > remaining ? value.subarray(0, remaining) : value;
+      received += chunk.byteLength;
+      html += decoder.decode(chunk, { stream: true });
+      if (/<\/head\s*>/i.test(html)) break;
+    }
+    html += decoder.decode();
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  return html;
+}
+
+async function fetchMetadataImage(pageUrl) {
+  let current = await publicMetadataUrl(pageUrl);
+  if (!current) return undefined;
+  for (let redirect = 0; redirect <= 3; redirect += 1) {
+    const response = await fetch(current, {
+      headers: {
+        Accept: 'text/html,application/xhtml+xml',
+        'User-Agent': 'AI-Build-Stage-Metadata/1.0',
+      },
+      redirect: 'manual',
+      signal: AbortSignal.timeout(8_000),
+    });
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      const location = response.headers.get('location');
+      current = location ? await publicMetadataUrl(location, current) : undefined;
+      if (!current) return undefined;
+      continue;
+    }
+    if (!response.ok) return undefined;
+    const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
+    if (!contentType.includes('text/html') && !contentType.includes('application/xhtml+xml')) return undefined;
+    const image = extractMetadataImage(await readResponseHead(response), current);
+    return image ? (await publicMetadataUrl(image))?.href : undefined;
+  }
+  return undefined;
 }
 
 export function parseIssueBody(body = '', issueTitle = '') {
@@ -136,13 +267,20 @@ async function approvalDate(issueNumber, fallback) {
 
 async function normalizeIssue(issue) {
   const fields = parseIssueBody(issue.body ?? '', issue.title ?? '');
-  const approvedAt = await approvalDate(issue.number, issue.updated_at);
+  const [approvedAt, previewImageUrl] = await Promise.all([
+    approvalDate(issue.number, issue.updated_at),
+    fetchMetadataImage(fields.demoUrl).catch((error) => {
+      console.warn(`Issue #${issue.number} 無法讀取網站預覽圖片：${error instanceof Error ? error.message : '未知錯誤'}`);
+      return undefined;
+    }),
+  ]);
   return {
     id: `gh:${repository}#${issue.number}`,
     slug: slugify(fields.name, issue.number),
     title: fields.name,
     description: plainText(fields.description),
     demoUrl: fields.demoUrl,
+    ...(previewImageUrl ? { previewImageUrl } : {}),
     ...(fields.sourceUrl ? { sourceUrl: fields.sourceUrl } : {}),
     category: fields.category,
     tags: fields.tags,
@@ -168,6 +306,20 @@ async function normalizeIssue(issue) {
   };
 }
 
+async function mapConcurrent(items, limit, mapper) {
+  const output = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      output[index] = await mapper(items[index]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return output;
+}
+
 async function validateOne(issueNumber) {
   const response = await request(`https://api.github.com/repos/${repository}/issues/${issueNumber}`);
   const issue = await response.json();
@@ -184,12 +336,11 @@ async function validateOne(issueNumber) {
 async function buildCatalog() {
   const issues = await fetchAll(`https://api.github.com/repos/${repository}/issues?state=all&labels=submission&per_page=100`);
   const candidates = issues.filter((issue) => !issue.pull_request && requiredLabels.every((required) => issue.labels.some((label) => label.name === required)));
-  const projects = [];
   for (const issue of candidates) {
     const statuses = issue.labels.filter((label) => label.name.startsWith(statusPrefix));
     if (statuses.length !== 1) throw new Error(`Issue #${issue.number} 有 ${statuses.length} 個 status:* labels，拒絕發布。`);
-    projects.push(await normalizeIssue(issue));
   }
+  const projects = await mapConcurrent(candidates, 4, normalizeIssue);
   const seenSlugs = new Map();
   const seenDemos = new Map();
   for (const project of projects) {

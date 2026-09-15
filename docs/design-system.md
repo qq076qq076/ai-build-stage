@@ -94,7 +94,7 @@ Elevation 對照：
 - Bolted panel 預設提供 32px 內容 padding，mobile 縮為 24px；頁面不得依賴跨元件 selector 補上必要內距。
 - 四角螺絲用 pseudo-elements 或共用 `PanelHardware` 裝飾實作，距邊 12px；裝飾 `pointer-events: none`、`aria-hidden="true"`。
 - 右上可放三個 recessed vent slots；在小尺寸卡片或 mobile 可隱藏，避免資訊密度過高。
-- Project card 不使用投稿圖片；左側或頂部以 category 色條、project initials 或 slug 產生的 CSS schematic pattern 建立差異。
+- Project card 頂部圖片區固定為 4:3，優先顯示 build time 從作品網站 metadata 取得的預覽圖片並以 `object-fit: cover` 裁切。沒有圖片或載入失敗時顯示無文字的深色 CSS grid fallback；不要求投稿者提供圖片。
 - 整張卡片只有一個主要詳情連結，內部 demo／Issue action 需避免 nested interactive elements。
 
 ### Recessed input／filter control

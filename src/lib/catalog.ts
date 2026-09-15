@@ -28,6 +28,7 @@ export const projectSchema = z.object({
   title: z.string().min(2).max(80),
   description: z.string().min(1).max(2_000),
   demoUrl: httpsUrl,
+  previewImageUrl: httpsUrl.optional(),
   sourceUrl: httpsUrl.optional(),
   category: projectCategorySchema,
   tags: z.array(z.string().min(2).max(24)).max(5),

@@ -126,6 +126,7 @@ export interface Project {
   title: string;
   description: string;
   demoUrl: string;
+  previewImageUrl?: string;
   sourceUrl?: string;
   category: ProjectCategory;
   tags: string[];
@@ -155,6 +156,7 @@ export interface Project {
 
 - JSON 只包含 approved + verified Projects，不輸出 pending/rejected Issue 的內容。
 - Project `title` 取自 Issue title 的 `[Project]:` 後方文字；`category='other'`、`tags=[]`，creator name/URL 使用 Issue 作者資料；`sourceUrl` 無值時省略。
+- `previewImageUrl` 不是投稿欄位。Action 在 build time 依序讀取作品網站的 `og:image:secure_url`、`og:image`、`twitter:image`、`twitter:image:src`，只保存 HTTPS 圖片網址；逾時、格式不符或沒有 metadata 時省略，不中止 catalog 建置。
 - HTML/Markdown 顯示前必須消毒；如不需要富文字，將 Markdown 轉成受限 HTML 或純文字。
 - 所有 URL 必須 parse 後檢查 `https:`；禁止 `javascript:`、`data:`、`file:` 與帶憑證 URL。
 - `plusOne` 取 GitHub reaction `+1` 的 count；bot 自己的 reaction 若存在亦計入，除非另有明確排除規則。

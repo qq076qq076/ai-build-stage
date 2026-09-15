@@ -51,5 +51,4 @@
 - 生成 `sitemap.xml`，只包含 approved + verified Project；下架項目下一版移出。
 - `robots.txt` 允許公開頁，禁止無意義的搜尋 query 組合被索引；canonical 指向未帶 filter 的主要 URL。
 - Project JSON-LD 可使用 `SoftwareApplication`、`WebSite` 或適合類型；資料必須與畫面一致，不虛構評分。GitHub `+1` 不等同正式 review rating，不輸出 `aggregateRating`。
-- Project 頁未提供專屬圖片時使用全站預設 Open Graph 圖，不從 Issue 內容推測或抓取圖片。
-
+- Project 卡片預覽只使用作品網站公開 metadata 的 HTTPS 圖片，不從 Issue 內容推測圖片；讀取失敗時使用無文字的本地 CSS grid fallback。

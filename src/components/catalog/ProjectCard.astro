@@ -8,7 +8,6 @@ interface Props { project: Project; }
 const { project } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const href = `${base}projects/${project.slug}/`;
-const initials = project.title.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2).toLocaleUpperCase('zh-Hant') || 'AI';
 const searchIndex = normalizeSearchText([project.title, project.description, project.creator.name, project.creator.githubLogin, ...project.tags, ...project.aiTools].join(' '));
 ---
 
@@ -27,7 +26,9 @@ const searchIndex = normalizeSearchText([project.title, project.description, pro
 >
   <span class="screw screw--tl" aria-hidden="true"></span>
   <span class="screw screw--tr" aria-hidden="true"></span>
-  <div class="project-identity" aria-hidden="true"><span>{initials}</span><i></i><i></i><i></i></div>
+  <div class="project-preview" aria-hidden="true">
+    {project.previewImageUrl && <img src={project.previewImageUrl} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()" />}
+  </div>
   <div class="project-card__body">
     <div class="meta-line"><span class="technical-label">{categoryLabels[project.category]}</span><span class="verified">Verified</span></div>
     <h2><a href={href}>{project.title}<span class="card-link-icon"><ArrowUpRight size={20} /></span></a></h2>
@@ -42,14 +43,13 @@ const searchIndex = normalizeSearchText([project.title, project.description, pro
 </article>
 
 <style>
-  .project-card { position: relative; display: grid; overflow: hidden; min-height: 25rem; grid-template-rows: 8.5rem 1fr auto; border: 1px solid rgb(255 255 255 / 55%); border-radius: var(--radius-lg); background: linear-gradient(145deg, rgb(240 242 245 / 72%), rgb(224 229 236 / 88%)); box-shadow: var(--shadow-card); transition: transform 300ms var(--ease-mechanical), box-shadow 300ms ease; }
+  .project-card { position: relative; display: grid; overflow: hidden; min-height: 25rem; grid-template-rows: auto 1fr auto; border: 1px solid rgb(255 255 255 / 55%); border-radius: var(--radius-lg); background: linear-gradient(145deg, rgb(240 242 245 / 72%), rgb(224 229 236 / 88%)); box-shadow: var(--shadow-card); transition: transform 300ms var(--ease-mechanical), box-shadow 300ms ease; }
   .project-card:hover { box-shadow: var(--shadow-floating); transform: translateY(-4px); }
   .screw { position: absolute; z-index: 2; top: 0.75rem; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: linear-gradient(45deg, transparent 44%, rgb(45 52 54 / 42%) 45% 55%, transparent 56%), radial-gradient(circle at 32% 28%, white, var(--color-shadow-deep) 70%); box-shadow: inset 1px 1px 2px white, 1px 1px 2px rgb(45 52 54 / 25%); }
   .screw--tl { left: 0.75rem; } .screw--tr { right: 0.75rem; }
-  .project-identity { position: relative; display: flex; align-items: center; justify-content: center; gap: 0.42rem; overflow: hidden; color: #e9f0ed; background: var(--color-dark-panel); box-shadow: inset 0.35rem 0.35rem 0.8rem #101314; }
-  .project-identity::before { position: absolute; inset: 0; background-image: linear-gradient(rgb(168 178 189 / 8%) 1px, transparent 1px), linear-gradient(90deg, rgb(168 178 189 / 8%) 1px, transparent 1px); background-size: 1.2rem 1.2rem; content: ""; }
-  .project-identity span { position: relative; margin-right: 0.7rem; color: var(--color-accent); font: 500 2.25rem/1 var(--font-mono); letter-spacing: -0.08em; text-shadow: 0 0 1rem rgb(255 71 87 / 40%); }
-  .project-identity i { position: relative; width: 0.25rem; height: 2.2rem; border-radius: 999px; background: #121718; box-shadow: inset 1px 1px 2px #000, 1px 1px rgb(255 255 255 / 8%); }
+  .project-preview { position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: var(--color-dark-panel); box-shadow: inset 0.35rem 0.35rem 0.8rem #101314; }
+  .project-preview::before { position: absolute; inset: 0; background-image: linear-gradient(rgb(168 178 189 / 8%) 1px, transparent 1px), linear-gradient(90deg, rgb(168 178 189 / 8%) 1px, transparent 1px); background-size: 1.2rem 1.2rem; content: ""; }
+  .project-preview img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; }
   .project-card__body { padding: 1.5rem 1.5rem 1.2rem; }
   .meta-line { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; color: var(--color-ink-muted); }
   .verified { padding: 0.2rem 0.45rem; border-radius: var(--radius-sm); color: #17612e; background: rgb(34 197 94 / 12%); font: 700 0.66rem/1 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }

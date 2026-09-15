@@ -80,7 +80,7 @@
 - [ ] GitHub new issue 頁只提供 Project Issue Form 與明確的其他聯絡入口，不開放無模板投稿。
 - [ ] Project 名稱取自 Issue title；表單只有 `description`、`demo_url`、`ai_tools`、`agreements` 為必填。
 - [ ] 表單與 catalog schema 均不包含 `project_name`、`tagline`、`build_story`、`pricing` 或 `languages`。
-- [ ] 表單與 catalog schema 均不包含 `cover_image_url` 或 `gallery_urls`。
+- [ ] 表單與 catalog schema 均不包含 `cover_image_url` 或 `gallery_urls`；`previewImageUrl` 只由 Action 從網站 metadata 衍生。
 - [ ] 新投稿自動得到 `submission`、`status:pending`。
 - [ ] 只有同時具有 `submission`、`status:approved`、`verified` 且狀態唯一的 Issue 會進入 catalog。
 - [ ] 移除 `verified` 或改成 rejected/withdrawn 後，Project 在下一次成功部署消失。
@@ -118,7 +118,7 @@
 - [ ] 全站使用集中式 design tokens，背景、panel、recessed、accent 與 elevation 不出現未說明的 one-off 值。
 - [ ] 陰影與 highlight 一致呈現左上 45° 光源；button pressed state 會下移並轉為 inset shadow。
 - [ ] 首頁 Catalog Console、Project card hardware details、recessed search/filter 與 LED status 皆符合 8.6–8.14。
-- [ ] Project 卡片與詳情頁不需要投稿圖片；預設 OG 圖及所有 texture/font 均由 repository 自託管。
+- [ ] Project 卡片不需要投稿圖片；metadata 圖片只能使用 HTTPS，讀取或載入失敗時回退至 repository 內的 CSS grid，且不顯示替代文字圖樣。
 - [ ] 安全紅只用於主要 action、active/focus 或 error，不成為大面積一般背景。
 - [ ] 320–1440px 版面保留工業擬物語言，且無 shadow clipping、水平捲動或小於 48px 的 mobile touch target。
 - [ ] `prefers-reduced-motion` 與 `forced-colors` 模式完整可用；功能與狀態不只依賴陰影、動畫或顏色。

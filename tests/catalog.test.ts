@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { projectCatalogSchema, projectSchema, type Project } from '../src/lib/catalog';
 import { matchesProject, normalizeSearchText, sortProjects } from '../src/lib/search';
-import { parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
+import { extractMetadataImage, parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
 
 const project: Project = {
   id: 'gh:example/stage#12',
@@ -22,13 +22,18 @@ const project: Project = {
 };
 
 describe('catalog schema', () => {
-  it('接受符合規格且不含圖片欄位的 Project', () => {
+  it('接受符合規格且沒有預覽圖片的 Project', () => {
     expect(projectSchema.parse(project)).toEqual(project);
     expect(projectCatalogSchema.parse({ schemaVersion: 2, generatedAt: '2026-09-14T00:00:00.000Z', repository: 'example/stage', projects: [project] }).projects).toHaveLength(1);
   });
 
   it('拒絕非 HTTPS demo URL', () => {
     expect(() => projectSchema.parse({ ...project, demoUrl: 'http://example.com' })).toThrow();
+  });
+
+  it('接受衍生的 HTTPS 預覽圖片並拒絕不安全網址', () => {
+    expect(projectSchema.parse({ ...project, previewImageUrl: 'https://example.com/cover.jpg' }).previewImageUrl).toBe('https://example.com/cover.jpg');
+    expect(() => projectSchema.parse({ ...project, previewImageUrl: 'http://example.com/cover.jpg' })).toThrow();
   });
 });
 
@@ -100,5 +105,20 @@ Codex
 
   it('中文名稱使用 Issue number 作為穩定 slug fallback', () => {
     expect(slugify('純中文作品', 42)).toBe('project-42');
+  });
+});
+
+describe('網站 metadata 圖片', () => {
+  it('依優先順序取得 Open Graph 圖片並解析相對網址', () => {
+    const html = `<head>
+      <meta name="twitter:image" content="https://cdn.example.com/twitter.jpg">
+      <meta content="/images/cover.jpg?size=large&amp;format=webp" property="og:image">
+    </head>`;
+    expect(extractMetadataImage(html, 'https://example.com/projects/demo')).toBe('https://example.com/images/cover.jpg?size=large&format=webp');
+  });
+
+  it('沒有圖片或圖片不是 HTTPS 時回傳 undefined', () => {
+    expect(extractMetadataImage('<head><title>Demo</title></head>', 'https://example.com')).toBeUndefined();
+    expect(extractMetadataImage('<meta property="og:image" content="http://example.com/cover.jpg">', 'https://example.com')).toBeUndefined();
   });
 });
