@@ -6,7 +6,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="找不到頁面｜AI Build Stage" description="你開啟的頁面不存在或作品已下架。" canonicalPath={`${base}404/`}>
+<BaseLayout title="找不到頁面｜AI Build Stage" description="你開啟的頁面不存在或作品已下架。" canonicalPath={`${base}404/`} noindex>
   <section class="not-found shell">
     <p class="code">ERR / 404</p><h1>這個訊號不存在</h1><p>頁面可能已移動，或作品已經下架。公開 catalog 只保留目前通過審核的 Project。</p>
     <PhysicalButton href={`${base}projects/`} variant="primary"><ArrowLeft size={18} />返回作品列表</PhysicalButton>

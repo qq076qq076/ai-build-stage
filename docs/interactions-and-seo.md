@@ -46,6 +46,8 @@
 ## 19. SEO 與分享
 
 - 全站有唯一 title、description、canonical、Open Graph 與 Twitter Card。
+- canonical、`og:url` 與 `og:image` 一律輸出絕對 HTTPS URL，並正確包含 GitHub Pages 的 `/ai-build-stage/` base path。
+- 全站預設分享圖為 repository 自託管的 `public/og-image.jpg`（1200×630）；Project 若有安全的網站 metadata 圖片則優先使用，否則回退至預設圖。
 - 首頁與列表 metadata 在 build time 產生。
 - 每個 Project 詳情由 Astro `getStaticPaths()` 產生獨立 HTML 與 metadata，不靠瀏覽器端 script 修改 `<head>`。
 - 生成 `sitemap.xml`，只包含 approved + verified Project；下架項目下一版移出。

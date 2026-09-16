@@ -10,6 +10,7 @@ const requiredFiles = [
   'guidelines/index.html',
   'about/index.html',
   'data/projects.json',
+  'og-image.jpg',
   'robots.txt',
   'sitemap.xml',
 ];
@@ -27,12 +28,35 @@ for (const project of catalog.projects) {
   if (!sitemap.includes(`/projects/${project.slug}/`)) throw new Error(`sitemap 缺少 Project：${project.slug}`);
 }
 
-const htmlFiles = ['index.html', '404.html', 'projects/index.html', 'guidelines/index.html', 'about/index.html'];
+const htmlFiles = [
+  'index.html',
+  '404.html',
+  'projects/index.html',
+  'guidelines/index.html',
+  'about/index.html',
+  ...catalog.projects.map((project) => `projects/${project.slug}/index.html`),
+];
 const secretPatterns = [/github_pat_[A-Za-z0-9_]+/, /ghp_[A-Za-z0-9]+/, /Bearer\s+[A-Za-z0-9._-]{20,}/i];
+const seoMarkers = [
+  'rel="canonical"',
+  'property="og:title"',
+  'property="og:description"',
+  'property="og:image"',
+  'property="og:url"',
+  'name="twitter:card"',
+];
 for (const file of htmlFiles) {
   const html = await readFile(resolve(dist, file), 'utf8');
   if (!html.includes('<html lang="zh-Hant">')) throw new Error(`${file} 缺少 zh-Hant 語言宣告。`);
-  if (!html.includes('rel="canonical"')) throw new Error(`${file} 缺少 canonical link。`);
+  for (const marker of seoMarkers) {
+    if (!html.includes(marker)) throw new Error(`${file} 缺少 SEO metadata：${marker}`);
+  }
+  if (!/<link rel="canonical" href="https:\/\//.test(html)) throw new Error(`${file} canonical 不是絕對 HTTPS URL。`);
+  for (const property of ['image', 'url']) {
+    if (!new RegExp(`<meta property="og:${property}" content="https://`).test(html)) {
+      throw new Error(`${file} 的 og:${property} 不是絕對 HTTPS URL。`);
+    }
+  }
   if (secretPatterns.some((pattern) => pattern.test(html))) throw new Error(`${file} 疑似包含秘密資料。`);
 }
 

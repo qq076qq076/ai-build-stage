@@ -17,7 +17,13 @@ const projectPath = `${base}projects/${project.slug}/`;
 const commentUrl = `${project.issue.url}#new_comment_field`;
 ---
 
-<BaseLayout title={`${project.title}｜AI Build Stage`} description={project.description.slice(0, 160)} canonicalPath={projectPath}>
+<BaseLayout
+  title={`${project.title}｜AI Build Stage`}
+  description={project.description.slice(0, 160)}
+  canonicalPath={projectPath}
+  image={project.previewImageUrl}
+  imageAlt={`${project.title} 專案預覽圖`}
+>
   <article class="detail shell">
     <a class="back-link" href={`${base}projects/`}><ArrowLeft size={18} />返回所有作品</a>
     <header class="detail-header">
