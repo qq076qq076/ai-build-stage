@@ -99,7 +99,7 @@ MVP 上線後追蹤下列指標，指標資料僅使用 GitHub Insights、Issues
 - 排序：最新上架、最近更新、最多推薦、最多評論、名稱 A–Z。
 - 篩選狀態同步到 query string，重新整理與分享網址後可復原。
 - 顯示結果數、清除全部條件、空結果建議。
-- 卡片至少顯示 title、description 摘要、creator、主要 category、最多 3 tags、推薦數與上架日期；頂部 4:3 圖片由 Action 自動讀取作品網站 metadata，不要求投稿者提供圖片，沒有圖片時顯示無文字的 CSS grid。
+- 卡片至少顯示 title、description 摘要、可點擊的 creator 名稱與連結、主要 category、最多 3 tags、推薦數與上架日期；頂部 4:3 圖片由 Action 自動讀取作品網站 metadata，不要求投稿者提供圖片，沒有圖片時顯示無文字的 CSS grid。
 
 ### 8.3 Project 詳情
 
