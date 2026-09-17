@@ -104,10 +104,11 @@ MVP 上線後追蹤下列指標，指標資料僅使用 GitHub Insights、Issues
 
 ### 8.3 Project 詳情
 
-- title 與完整 description；不設 Project 專屬圖片投稿欄位，卡片預覽圖片僅為自動衍生資料。
+- 使用較列表頁克制的 title 尺寸，名稱下方顯示網站 metadata 衍生圖片；無圖或載入失敗時使用 CSS grid fallback，不設圖片投稿欄位。
+- 完整 description 保留投稿者輸入的換行、段落與清單結構，顯示時不加入重複的 section 標題。
 - demo、source code（若有）、creator 與 AI tools。
-- tags、category、submitted/approved/updated 時間。
-- 清楚顯示「Verified submission」與來源 Issue #number 連結；verified 只代表已依平台規則審核，不代表安全、品質或商業背書。
+- tags、category、submitted/approved/updated 時間；作品資料與推薦／評論互動整合在同一側欄。
+- 顯示來源 Issue #number；verified 只代表已依平台規則審核，不代表安全、品質或商業背書。
 - 推薦數只計 `+1` reaction；不把 Issue body 作者的文字「like」或 comment emoji 納入。
 - 評論區 MVP 顯示 comment count 與可選的最近評論唯讀摘要；主要 CTA 前往 GitHub 留言。
 - 外部 demo/source 連結以新分頁開啟，加入 `rel="noopener noreferrer"`。

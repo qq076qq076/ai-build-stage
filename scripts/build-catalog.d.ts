@@ -14,3 +14,4 @@ export interface ParsedSubmission {
 export function parseIssueBody(body?: string, issueTitle?: string): ParsedSubmission;
 export function slugify(value: string, issueNumber: number): string;
 export function extractMetadataImage(html: string, pageUrl: string): string | undefined;
+export function formatDescription(value: string): string;

@@ -56,12 +56,18 @@ function list(value, max = Infinity) {
   return clean(value ?? '').split(/[，,\n]/).map((item) => item.trim()).filter(Boolean).slice(0, max);
 }
 
-function plainText(value) {
+export function formatDescription(value) {
   return value
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-    .replace(/[`*_>#~-]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/^[ \t]*#{1,6}[ \t]+/gm, '')
+    .replace(/^[ \t]*>[ \t]?/gm, '')
+    .replace(/^[ \t]*[*+-][ \t]+/gm, '• ')
+    .replace(/[`*_~]/g, '')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ *\n */g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -278,7 +284,7 @@ async function normalizeIssue(issue) {
     id: `gh:${repository}#${issue.number}`,
     slug: slugify(fields.name, issue.number),
     title: fields.name,
-    description: plainText(fields.description),
+    description: formatDescription(fields.description),
     demoUrl: fields.demoUrl,
     ...(previewImageUrl ? { previewImageUrl } : {}),
     ...(fields.sourceUrl ? { sourceUrl: fields.sourceUrl } : {}),

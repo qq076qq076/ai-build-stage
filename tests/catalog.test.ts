@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { projectCatalogSchema, projectSchema, type Project } from '../src/lib/catalog';
 import { getPaginationItems, getTotalPages } from '../src/lib/pagination';
 import { matchesProject, normalizeSearchText, sortProjects } from '../src/lib/search';
-import { extractMetadataImage, parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
+import { extractMetadataImage, formatDescription, parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
 
 const project: Project = {
   id: 'gh:example/stage#12',
@@ -135,5 +135,26 @@ describe('網站 metadata 圖片', () => {
   it('沒有圖片或圖片不是 HTTPS 時回傳 undefined', () => {
     expect(extractMetadataImage('<head><title>Demo</title></head>', 'https://example.com')).toBeUndefined();
     expect(extractMetadataImage('<meta property="og:image" content="http://example.com/cover.jpg">', 'https://example.com')).toBeUndefined();
+  });
+});
+
+describe('作品介紹排版', () => {
+  it('保留段落、手動換行與清單結構', () => {
+    const input = `## 第一段
+第一行  內容
+第二行
+
+
+
+第二段
+- 項目一
+* 項目二`;
+    expect(formatDescription(input)).toBe(`第一段
+第一行 內容
+第二行
+
+第二段
+• 項目一
+• 項目二`);
   });
 });
