@@ -101,6 +101,7 @@
 - [ ] 未登入使用者可瀏覽所有 approved Projects 並完成前端搜尋、篩選、排序。
 - [ ] 關閉 JavaScript 時仍可閱讀首頁、完整 Project 詳情與預設 Project 列表；只有即時搜尋／篩選等增強功能停用。
 - [ ] 篩選狀態可由 URL 分享並在 reload 復原。
+- [ ] Project 列表每頁顯示 9 件，分頁可用鍵盤操作，且篩選後頁碼會重設並避免空白頁。
 - [ ] Project 詳情具有來源 Issue、verified 說明、推薦數、評論數、資料時間。
 - [ ] 推薦與評論 CTA 導向同一張 Project Issue；網站不要求或保存 GitHub token。
 - [ ] GitHub API 即時讀取失敗／限流時，頁面仍使用 snapshot 完整可用。

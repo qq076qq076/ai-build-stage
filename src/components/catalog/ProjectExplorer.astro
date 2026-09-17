@@ -1,5 +1,5 @@
 ---
-import { Search, SlidersHorizontal } from '@lucide/astro';
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from '@lucide/astro';
 import { categoryLabels, type Project } from '../../lib/catalog';
 import ProjectCard from './ProjectCard.astro';
 
@@ -25,6 +25,13 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
   <div class="result-bar"><p aria-live="polite"><strong data-result-count>{projects.length}</strong> 件已驗證作品</p><p class="technical-label">GitHub issue backed</p></div>
   <div class="project-grid" data-project-grid>{projects.map((project) => <ProjectCard project={project} />)}</div>
 
+  <nav class="pagination" data-pagination aria-label="作品分頁" hidden>
+    <button type="button" data-page-action="previous"><ChevronLeft size={17} aria-hidden="true" />上一頁</button>
+    <div class="page-numbers" data-page-numbers></div>
+    <button type="button" data-page-action="next">下一頁<ChevronRight size={17} aria-hidden="true" /></button>
+    <span class="page-summary" data-page-summary aria-live="polite"></span>
+  </nav>
+
   <div class="empty-panel" data-empty={projects.length === 0 ? 'catalog' : 'filters'} hidden={projects.length > 0}>
     <span class="empty-code technical-label">NO MATCH / 000</span>
     <h2>{projects.length === 0 ? '舞台已就緒，等待第一件作品' : '找不到符合條件的作品'}</h2>
@@ -34,7 +41,10 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
 </project-explorer>
 
 <script>
+  import { getPaginationItems, getTotalPages } from '../../lib/pagination';
   import { normalizeSearchText } from '../../lib/search';
+
+  const PAGE_SIZE = 9;
 
   class ProjectExplorerElement extends HTMLElement {
     connectedCallback() {
@@ -42,6 +52,11 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
       const grid = this.querySelector<HTMLElement>('[data-project-grid]');
       const count = this.querySelector<HTMLElement>('[data-result-count]');
       const empty = this.querySelector<HTMLElement>('[data-empty="filters"]');
+      const pagination = this.querySelector<HTMLElement>('[data-pagination]');
+      const pageNumbers = this.querySelector<HTMLElement>('[data-page-numbers]');
+      const pageSummary = this.querySelector<HTMLElement>('[data-page-summary]');
+      const previous = this.querySelector<HTMLButtonElement>('[data-page-action="previous"]');
+      const nextButton = this.querySelector<HTMLButtonElement>('[data-page-action="next"]');
       if (!form || !grid || !count) return;
       const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-project-card]'));
       const params = new URLSearchParams(window.location.search);
@@ -49,7 +64,37 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
         const control = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
         if (control && params.has(name)) control.value = params.get(name) ?? '';
       }
-      const update = () => {
+      const requestedPage = Number(params.get('page') ?? '1');
+      let currentPage = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+
+      const renderPagination = (totalPages: number, focusCurrent = false) => {
+        if (!pagination || !pageNumbers || !pageSummary || !previous || !nextButton) return;
+        pagination.hidden = totalPages <= 1;
+        previous.disabled = currentPage <= 1;
+        nextButton.disabled = currentPage >= totalPages;
+        pageSummary.textContent = `第 ${currentPage} 頁，共 ${totalPages} 頁；每頁 ${PAGE_SIZE} 件`;
+        pageNumbers.replaceChildren();
+        for (const item of getPaginationItems(currentPage, totalPages)) {
+          if (item === 'ellipsis') {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'page-ellipsis';
+            ellipsis.textContent = '…';
+            ellipsis.setAttribute('aria-hidden', 'true');
+            pageNumbers.append(ellipsis);
+            continue;
+          }
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.dataset.page = String(item);
+          button.textContent = String(item);
+          button.setAttribute('aria-label', `前往第 ${item} 頁`);
+          if (item === currentPage) button.setAttribute('aria-current', 'page');
+          pageNumbers.append(button);
+        }
+        if (focusCurrent) pageNumbers.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus({ preventScroll: true });
+      };
+
+      const update = (page = 1, focusCurrent = false) => {
         const data = new FormData(form);
         const query = normalizeSearchText(String(data.get('q') ?? ''));
         const category = String(data.get('category') ?? '');
@@ -57,7 +102,6 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
         const sort = String(data.get('sort') ?? 'newest');
         const visible = cards.filter((card) => {
           const matches = (!query || (card.dataset.search ?? '').includes(query)) && (!category || card.dataset.category === category) && (!tool || (card.dataset.tools ?? '').split('|').includes(tool));
-          card.hidden = !matches;
           return matches;
         });
         const value = (card: HTMLElement, key: string) => card.dataset[key] ?? '';
@@ -68,15 +112,32 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
           return Date.parse(value(b, sort === 'updated' ? 'updated' : 'approved')) - Date.parse(value(a, sort === 'updated' ? 'updated' : 'approved')) || value(a, 'id').localeCompare(value(b, 'id'));
         });
         visible.forEach((card) => grid.append(card));
+        const totalPages = getTotalPages(visible.length, PAGE_SIZE);
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        const first = (currentPage - 1) * PAGE_SIZE;
+        const pageCards = new Set(visible.slice(first, first + PAGE_SIZE));
+        cards.forEach((card) => { card.hidden = !pageCards.has(card); });
         count.textContent = String(visible.length);
         if (empty) empty.hidden = visible.length > 0;
+        renderPagination(totalPages, focusCurrent);
         const next = new URLSearchParams();
         for (const [key, item] of data.entries()) { const value = String(item); if (value && !(key === 'sort' && value === 'newest')) next.set(key, value); }
+        if (currentPage > 1) next.set('page', String(currentPage));
         window.history.replaceState(null, '', `${window.location.pathname}${next.size ? `?${next}` : ''}`);
       };
-      form.addEventListener('input', update);
-      form.addEventListener('reset', () => window.setTimeout(update));
-      update();
+      form.addEventListener('input', () => update(1));
+      form.addEventListener('reset', () => window.setTimeout(() => update(1)));
+      pagination?.addEventListener('click', (event) => {
+        const target = (event.target as HTMLElement).closest<HTMLButtonElement>('button');
+        if (!target || target.disabled) return;
+        const explicitPage = Number(target.dataset.page);
+        const targetPage = Number.isInteger(explicitPage) && explicitPage > 0
+          ? explicitPage
+          : currentPage + (target.dataset.pageAction === 'previous' ? -1 : 1);
+        update(targetPage, Boolean(target.dataset.page));
+        grid.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      });
+      update(currentPage);
     }
   }
   if (!customElements.get('project-explorer')) customElements.define('project-explorer', ProjectExplorerElement);
@@ -95,11 +156,19 @@ const submitUrl = 'https://github.com/qq076qq076/ai-build-stage/issues/new?templ
   .result-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 2.5rem 0 1.2rem; color: var(--color-ink-muted); }
   .result-bar p { margin: 0; } .result-bar strong { color: var(--color-ink); font: 500 1.6rem/1 var(--font-mono); }
   .project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+  .pagination { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.75rem; align-items: center; margin-top: 2.5rem; }
+  .pagination[hidden] { display: none; }
+  .pagination :global(button) { position: relative; z-index: 1; min-width: 3rem; min-height: 3rem; padding: 0.65rem 0.9rem; }
+  .pagination :global(button:disabled) { cursor: not-allowed; opacity: 0.45; transform: none; }
+  .page-numbers { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+  .page-numbers :global(button[aria-current="page"]) { color: white; border-color: transparent; background: var(--color-accent); box-shadow: var(--shadow-accent); }
+  :global(.page-ellipsis) { display: inline-grid; min-width: 2rem; min-height: 3rem; place-items: center; color: var(--color-ink-muted); font: 700 0.8rem/1 var(--font-mono); }
+  .page-summary { grid-column: 1 / -1; color: var(--color-ink-muted); font: 600 0.68rem/1.4 var(--font-mono); letter-spacing: 0.04em; text-align: center; }
   .empty-panel { padding: clamp(2.5rem, 8vw, 5rem); border: 1px solid rgb(255 255 255 / 60%); border-radius: var(--radius-xl); text-align: center; background: radial-gradient(circle at 50% 0%, rgb(255 255 255 / 75%), transparent 65%), var(--color-chassis); box-shadow: var(--shadow-recessed); }
   .empty-panel[hidden] { display: none; } .empty-code { color: var(--color-accent-dark); }
   .empty-panel h2 { margin: 0.8rem 0 0; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spacing: -0.035em; }
   .empty-panel p { max-width: 36rem; margin: 0.8rem auto 0; color: var(--color-ink-muted); }
   .empty-panel a { display: inline-flex; min-height: 3rem; align-items: center; margin-top: 1.5rem; padding: 0.7rem 1.1rem; border-radius: var(--radius-md); color: white; background: var(--color-accent); box-shadow: var(--shadow-accent); font-size: 0.82rem; font-weight: 800; letter-spacing: 0.04em; text-decoration: none; }
   @media (max-width: 62rem) { .control-panel { grid-template-columns: 2fr 1fr 1fr; } .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 44rem) { .control-panel, .project-grid { grid-template-columns: 1fr; } .result-bar { align-items: start; flex-direction: column; } }
+  @media (max-width: 44rem) { .control-panel, .project-grid { grid-template-columns: 1fr; } .result-bar { align-items: start; flex-direction: column; } .pagination { grid-template-columns: 1fr 1fr; } .page-numbers { grid-column: 1 / -1; grid-row: 1; } [data-page-action="previous"] { grid-column: 1; grid-row: 2; } [data-page-action="next"] { grid-column: 2; grid-row: 2; } .page-summary { grid-row: 3; } }
 </style>

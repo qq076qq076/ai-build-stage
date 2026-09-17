@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { projectCatalogSchema, projectSchema, type Project } from '../src/lib/catalog';
+import { getPaginationItems, getTotalPages } from '../src/lib/pagination';
 import { matchesProject, normalizeSearchText, sortProjects } from '../src/lib/search';
 import { extractMetadataImage, parseIssueBody, slugify } from '../scripts/build-catalog.mjs';
 
@@ -50,6 +51,20 @@ describe('search and sort', () => {
   it('依推薦數排序並保持 deterministic fallback', () => {
     const another: Project = { ...project, id: 'gh:example/stage#13', slug: 'second', issue: { ...project.issue, number: 13, reactions: { plusOne: 20 } } };
     expect(sortProjects([project, another], 'recommended')[0]?.id).toBe(another.id);
+  });
+});
+
+describe('作品分頁', () => {
+  it('每頁九件並至少保留一頁', () => {
+    expect(getTotalPages(0)).toBe(1);
+    expect(getTotalPages(9)).toBe(1);
+    expect(getTotalPages(10)).toBe(2);
+    expect(getTotalPages(27)).toBe(3);
+  });
+
+  it('頁數較多時顯示目前頁附近、首尾與省略符號', () => {
+    expect(getPaginationItems(6, 12)).toEqual([1, 'ellipsis', 4, 5, 6, 7, 8, 'ellipsis', 12]);
+    expect(getPaginationItems(99, 12)).toEqual([1, 'ellipsis', 10, 11, 12]);
   });
 });
 
