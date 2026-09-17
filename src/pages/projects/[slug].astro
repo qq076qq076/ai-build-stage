@@ -87,7 +87,7 @@ const metaDescription = project.description.replace(/\s+/g, ' ').slice(0, 160);
   h1 { max-width: 16ch; margin: 0.55rem 0 0; font-size: clamp(2.5rem, 5.5vw, 4.6rem); line-height: 0.98; letter-spacing: -0.055em; }
   .project-image { position: relative; overflow: hidden; width: 100%; aspect-ratio: 16 / 9; margin-top: 1.6rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-lg); background: var(--color-dark-panel); box-shadow: inset 0.35rem 0.35rem 0.8rem #101314, var(--shadow-card); }
   .project-image::before { position: absolute; inset: 0; background-image: linear-gradient(rgb(168 178 189 / 8%) 1px, transparent 1px), linear-gradient(90deg, rgb(168 178 189 / 8%) 1px, transparent 1px); background-size: 1.2rem 1.2rem; content: ""; }
-  .project-image img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; }
+  .project-image img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
   .actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
   .project-panel { padding: 1.5rem; border: 3px solid #545e63; border-radius: var(--radius-lg); color: #e1e9e5; background-color: var(--color-dark-panel); box-shadow: inset 0.4rem 0.4rem 0.8rem #101314, var(--shadow-card); }
   .project-data { margin: 0; }
